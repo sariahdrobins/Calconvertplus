@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Random Name Selector</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #eef2f5; color: #333; }
+  .generator-section { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label { display: block; margin-bottom: 8px; font-weight: bold; }
+  textarea, button { display: block; width: 100%; margin-bottom: 15px; padding: 8px; }
+  button { background: #6c757d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #5a6268; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="generator-section">
+  <h2>Random Name Selector</h2>
+  <label for="randomNameList">Enter names (separate by commas or new lines):</label>
+  <textarea id="randomNameList" rows="5" placeholder="Alice, Bob, Charlie"></textarea>
+  <button onclick="selectRandomName()">Select Random Name</button>
+  <div class="result" id="selectedName"></div>
+</div>
+
+<script>
+function selectRandomName() {
+  let names = document.getElementById('randomNameList').value
+                .split(/[\n,]+/)
+                .map(n => n.trim())
+                .filter(n => n);
+  if(names.length === 0) { 
+    alert('Please enter some names.'); 
+    return; 
+  }
+  let selected = names[Math.floor(Math.random() * names.length)];
+  document.getElementById('selectedName').textContent = `Selected Name: ${selected}`;
+}
+</script>
+</body>
+</html>
