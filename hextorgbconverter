@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Hex to RGB Converter</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #f0f4f8; padding: 20px; color: #333; }
+  .converter { max-width: 350px; margin: auto; background: #fff; padding: 20px; 
+               border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; }
+  input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #007BFF; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="converter">
+  <h2>Hex to RGB Converter</h2>
+  <input type="text" id="hexInput" placeholder="#ffffff or ffffff" maxlength="7" />
+  <button onclick="convertHexToRGB()">Convert</button>
+  <div class="result" id="rgbResult"></div>
+</div>
+
+<script>
+function convertHexToRGB() {
+  let hex = document.getElementById('hexInput').value.trim();
+  if(hex.startsWith('#')) { hex = hex.slice(1); }
+  if(hex.length !== 3 && hex.length !== 6) {
+    alert('Please enter a valid hex code.');
+    return;
+  }
+  if(hex.length === 3) { 
+    hex = hex.split('').map(char => char + char).join(''); 
+  }
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  document.getElementById('rgbResult').textContent = `RGB: (${r}, ${g}, ${b})`;
+}
+</script>
+</body>
+</html>
