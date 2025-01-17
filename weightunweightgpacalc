@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Weighted vs Unweighted GPA Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f7f9fa; color: #333; }
+  .calculator { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
+               box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
+  button { background: #17a2b8; color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #117a8b; }
+  .result { font-weight: bold; margin-top: 15px; }
+  .course { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <h2>Weighted vs Unweighted GPA Calculator</h2>
+  <p>Enter course details for up to 5 courses. Check if a course is weighted (e.g., Honors/AP):</p>
+  <div id="courses">
+    <!-- Reuse structure for 5 courses -->
+    <div class="course">
+      <label>Course 1 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 1 Grade (A-F):</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+      <label><input type="checkbox" class="weighted" /> Weighted Course</label>
+    </div>
+    <!-- Repeat similar block for courses 2-5 -->
+    <div class="course">
+      <label>Course 2 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 2 Grade (A-F):</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+      <label><input type="checkbox" class="weighted" /> Weighted Course</label>
+    </div>
+    <div class="course">
+      <label>Course 3 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 3 Grade (A-F):</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+      <label><input type="checkbox" class="weighted" /> Weighted Course</label>
+    </div>
+    <div class="course">
+      <label>Course 4 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 4 Grade (A-F):</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+      <label><input type="checkbox" class="weighted" /> Weighted Course</label>
+    </div>
+    <div class="course">
+      <label>Course 5 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 5 Grade (A-F):</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+      <label><input type="checkbox" class="weighted" /> Weighted Course</label>
+    </div>
+  </div>
+
+  <button onclick="calculateWeightedGPA()">Calculate GPAs</button>
+  <div class="result" id="weightedGpaResult"></div>
+</div>
+
+<script>
+function calculateWeightedGPA() {
+  const credits = document.querySelectorAll('.credit');
+  const grades = document.querySelectorAll('.grade');
+  const weightedChecks = document.querySelectorAll('.weighted');
+  let totalUnweightedPoints = 0;
+  let totalWeightedPoints = 0;
+  let totalCredits = 0;
+
+  for(let i = 0; i < credits.length; i++) {
+    const credit = parseFloat(credits[i].value);
+    const grade = parseFloat(grades[i].value);
+    const isWeighted = weightedChecks[i].checked;
+    if(!isNaN(credit) && !isNaN(grade)) {
+      totalUnweightedPoints += credit * grade;
+      // Assume weighted adds 0.5 point for A and 0.25 for B as a simple model
+      let extra = 0;
+      if(isWeighted) { 
+        if(grade === 4) extra = 0.5;
+        else if(grade === 3) extra = 0.25;
+      }
+      totalWeightedPoints += credit * (grade + extra);
+      totalCredits += credit;
+    }
+  }
+
+  const unweightedGPA = totalCredits ? totalUnweightedPoints / totalCredits : 0;
+  const weightedGPA = totalCredits ? totalWeightedPoints / totalCredits : 0;
+  document.getElementById('weightedGpaResult').textContent = 
+    `Unweighted GPA: ${unweightedGPA.toFixed(2)}, Weighted GPA: ${weightedGPA.toFixed(2)}`;
+}
+</script>
+</body>
+</html>
