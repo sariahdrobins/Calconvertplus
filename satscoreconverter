@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SAT Score Converter</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f7f9fa; color: #333; }
+  .calculator { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, button { display: block; width: 100%; margin-bottom: 15px; }
+  button { background: #6f42c1; color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #593196; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <h2>SAT Score Converter</h2>
+  <label for="readingWriting">Evidence-Based Reading & Writing Score:</label>
+  <input type="number" id="readingWriting" placeholder="Enter R/W score" />
+
+  <label for="mathScore">Math Score:</label>
+  <input type="number" id="mathScore" placeholder="Enter Math score" />
+
+  <button onclick="convertSAT()">Convert to Total SAT Score</button>
+  <div class="result" id="satResult"></div>
+</div>
+
+<script>
+function convertSAT() {
+  const readingWriting = parseFloat(document.getElementById('readingWriting').value);
+  const mathScore = parseFloat(document.getElementById('mathScore').value);
+
+  if(isNaN(readingWriting) || isNaN(mathScore)) {
+    alert('Please enter valid scores for both sections.');
+    return;
+  }
+
+  const total = readingWriting + mathScore;
+  document.getElementById('satResult').textContent = `Total SAT Score: ${total}`;
+}
+</script>
+</body>
+</html>
