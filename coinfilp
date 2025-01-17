@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Coin Flip Simulator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #f8f9fa; padding: 20px; color: #333; }
+  .flip { max-width: 300px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; }
+  button { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: none; background: #28a745; color: #fff; cursor: pointer; }
+  button:hover { background: #1e7e34; }
+  .result { font-size: 2em; font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="flip">
+  <h2>Coin Flip Simulator</h2>
+  <button onclick="flipCoin()">Flip Coin</button>
+  <div class="result" id="coinResult"></div>
+</div>
+
+<script>
+function flipCoin() {
+  const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+  document.getElementById('coinResult').textContent = result;
+}
+</script>
+</body>
+</html>
