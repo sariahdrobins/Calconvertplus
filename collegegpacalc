@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>College GPA Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f7f9fa; color: #333; }
+  .calculator { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
+  button { background: #007BFF; color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <h2>College GPA Calculator</h2>
+  <p>Enter credits and letter grades for up to 5 courses:</p>
+
+  <div id="courses">
+    <div class="course">
+      <label>Course 1 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 1 Grade:</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+    </div>
+    <div class="course">
+      <label>Course 2 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 2 Grade:</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+    </div>
+    <div class="course">
+      <label>Course 3 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 3 Grade:</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+    </div>
+    <div class="course">
+      <label>Course 4 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 4 Grade:</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+    </div>
+    <div class="course">
+      <label>Course 5 Credits:</label>
+      <input type="number" class="credit" placeholder="Credits" step="0.5" />
+      <label>Course 5 Grade:</label>
+      <select class="grade">
+        <option value="">Select grade</option>
+        <option value="4">A</option>
+        <option value="3">B</option>
+        <option value="2">C</option>
+        <option value="1">D</option>
+        <option value="0">F</option>
+      </select>
+    </div>
+  </div>
+
+  <button onclick="calculateGPA()">Calculate GPA</button>
+  <div class="result" id="gpaResult"></div>
+</div>
+
+<script>
+function calculateGPA() {
+  const credits = document.querySelectorAll('.credit');
+  const grades = document.querySelectorAll('.grade');
+  let totalQualityPoints = 0;
+  let totalCredits = 0;
+
+  for(let i = 0; i < credits.length; i++) {
+    const credit = parseFloat(credits[i].value);
+    const grade = parseFloat(grades[i].value);
+    if(!isNaN(credit) && !isNaN(grade)) {
+      totalQualityPoints += credit * grade;
+      totalCredits += credit;
+    }
+  }
+
+  const gpa = totalCredits ? totalQualityPoints / totalCredits : 0;
+  document.getElementById('gpaResult').textContent = `Your GPA: ${gpa.toFixed(2)}`;
+}
+</script>
+</body>
+</html>
