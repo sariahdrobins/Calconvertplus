@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Class Grade Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #f0f4f8; padding: 20px; color: #333; }
+  .section { max-width: 600px; margin: auto; background: #fff; padding: 20px; 
+             border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  h2 { text-align: center; }
+  input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #28a745; color: white; border: none; cursor: pointer; }
+  button:hover { background: #1e7e34; }
+  .row, .assignmentRow { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .row select, .row input, .assignmentRow select, .assignmentRow input { flex: 1; }
+  .customInput { display: none; }
+  .removeBtn { background: #dc3545; padding: 5px 10px; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  .removeBtn:hover { background: #c82333; }
+  .smallBtn { width: auto; padding: 5px 10px; font-size: 0.9em; }
+  .backBtn { background: #4aa0be; color: white; }
+  .backBtn:hover { background: #3d8fae; }
+</style>
+</head>
+<body>
+
+<div id="categoriesSection" class="section">
+  <h2>Set Grade Categories (Optional)</h2>
+  <div id="categoriesContainer"></div>
+  <button onclick="addCategoryRow()" class="smallBtn">Add Category</button>
+  <button onclick="finalizeCategories()">Start Adding Grades</button>
+  <p>Ensure total weight sums to 100% if setting multiple categories.</p>
+</div>
+
+<div id="assignmentsSection" class="section" style="display:none;">
+  <h2>Add Assignments</h2>
+  <div id="assignmentsContainer"></div>
+  <button onclick="addAssignmentRow()" class="smallBtn">Add Assignment</button>
+  <button onclick="calculateGrade()">Calculate Grade</button>
+  <div id="result"></div>
+  <button onclick="goBackEditCategories()" class="smallBtn backBtn">Go Back and Edit Categories</button>
+</div>
+
+<script>
+let categories = [];
+let assignments = [];
+
+function addCategoryRow() {
+  let container = document.getElementById('categoriesContainer');
+  let row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = `
+    <select class="catSelect">
+      <option value="">Select Category</option>
+      <option value="Tests/Exams">Tests/Exams</option>
+      <option value="Quizzes">Quizzes</option>
+      <option value="Homework">Homework</option>
+      <option value="Projects">Projects</option>
+      <option value="Final Exam">Final Exam</option>
+      <option value="Custom">Custom</option>
+    </select>
+    <input type="text" placeholder="Custom Category" class="customInput" />
+    <input type="number" placeholder="Weight (%)" class="catWeight" />
+    <button class="removeBtn smallBtn" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  container.appendChild(row);
+
+  // Attach event listener for custom input toggle
+  let select = row.querySelector('.catSelect');
+  select.addEventListener('change', function() {
+    let customInput = this.parentElement.querySelector('.customInput');
+    if(this.value === 'Custom') {
+      customInput.style.display = 'block';
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
+}
+
+// Initialize with three blank category rows
+for(let i = 0; i < 3; i++) {
+  addCategoryRow();
+}
+
+function finalizeCategories() {
+  let rows = document.querySelectorAll('#categoriesContainer .row');
+  categories = [];
+  let total = 0;
+  rows.forEach(row => {
+    let select = row.querySelector('.catSelect');
+    let customInput = row.querySelector('.customInput');
+    let weightInput = row.querySelector('.catWeight');
+
+    let category = select.value;
+    if(category === 'Custom') {
+      let customVal = customInput.value.trim();
+      if(customVal) {
+        category = customVal;
+      } else {
+        category = '';
+      }
+    }
+    let weight = parseFloat(weightInput.value) || 0;
+    if(category) {
+      categories.push({ name: category, weight });
+      total += weight;
+    }
+  });
+
+  // If no categories set, default to one category 100%
+  if(categories.length === 0) {
+    categories = [{ name: "Assignments", weight: 100 }];
+  } else if(total !== 100) {
+    alert("Total weight must sum to 100%. Currently: " + total + "%");
+    return;
+  }
+
+  document.getElementById('categoriesSection').style.display = 'none';
+  document.getElementById('assignmentsSection').style.display = 'block';
+}
+
+function goBackEditCategories() {
+  // Hide assignments section and show categories for editing
+  document.getElementById('assignmentsSection').style.display = 'none';
+  document.getElementById('categoriesSection').style.display = 'block';
+}
+
+function addAssignmentRow() {
+  let container = document.getElementById('assignmentsContainer');
+  let row = document.createElement('div');
+  row.className = 'assignmentRow';
+  
+  let options = categories.map(cat => `<option value="${cat.name}">${cat.name} (${cat.weight}%)</option>`).join('');
+  
+  row.innerHTML = `
+    <input type="number" placeholder="Grade (%)" class="assignGrade" />
+    <select class="assignCat">
+      ${options}
+    </select>
+    <button class="removeBtn smallBtn" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  container.appendChild(row);
+}
+
+function calculateGrade() {
+  let gradeInputs = document.querySelectorAll('.assignGrade');
+  let catSelects = document.querySelectorAll('.assignCat');
+  assignments = [];
+  
+  for (let i = 0; i < gradeInputs.length; i++) {
+    let grade = parseFloat(gradeInputs[i].value);
+    let category = catSelects[i].value;
+    if (!isNaN(grade) && category) {
+      assignments.push({ grade, category });
+    }
+  }
+  
+  let categoryTotals = {};
+  let categoryCounts = {};
+  for (let cat of categories) {
+    categoryTotals[cat.name] = 0;
+    categoryCounts[cat.name] = 0;
+  }
+  
+  for (let assign of assignments) {
+    if (categoryTotals.hasOwnProperty(assign.category)) {
+      categoryTotals[assign.category] += assign.grade;
+      categoryCounts[assign.category] += 1;
+    }
+  }
+  
+  let finalGrade = 0;
+  for (let cat of categories) {
+    if (categoryCounts[cat.name] > 0) {
+      let avg = categoryTotals[cat.name] / categoryCounts[cat.name];
+      finalGrade += avg * (cat.weight / 100);
+    }
+  }
+  
+  document.getElementById('result').textContent = `Calculated Grade: ${finalGrade.toFixed(2)}%`;
+}
+</script>
+
+</body>
+</html>
