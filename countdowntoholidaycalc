@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Countdown to a Holiday</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #f7f9fa; padding: 20px; color: #333; }
+  .countdown { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
+               box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; }
+  label, input, button { display: block; width: 100%; margin-bottom: 15px; }
+  input, button { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #007BFF; color: #fff; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="countdown">
+  <h2>Countdown to a Holiday</h2>
+  <label for="holidayDate">Select Date:</label>
+  <input type="date" id="holidayDate" />
+  <button onclick="startCountdown()">Start Countdown</button>
+  <div class="result" id="countdownResult"></div>
+</div>
+
+<script>
+function startCountdown() {
+  const dateInput = document.getElementById('holidayDate').value;
+  if(!dateInput) {
+    alert('Please select a date.');
+    return;
+  }
+  const holidayDate = new Date(dateInput);
+  const now = new Date();
+  const diff = holidayDate - now;
+  
+  if(diff <= 0) {
+    document.getElementById('countdownResult').textContent = 'The date has passed or is today!';
+    return;
+  }
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  document.getElementById('countdownResult').textContent = 
+    `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds remaining.`;
+}
+</script>
+</body>
+</html>
