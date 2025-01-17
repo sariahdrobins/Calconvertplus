@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Paycheck Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #eef2f5; color: #333; }
+  .calculator { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
+  button { background: #6c757d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #5a6268; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <h2>Paycheck Calculator</h2>
+  <label for="wage">Hourly Wage or Annual Salary:</label>
+  <input type="number" id="wage" placeholder="Enter wage/salary" />
+
+  <label for="hours">Hours Worked (per pay period):</label>
+  <input type="number" id="hours" placeholder="Enter hours worked" />
+
+  <label for="stateSelect">Select Your State:</label>
+  <select id="stateSelect">
+    <option value="">--Select State--</option>
+    <option value="0.050">Alabama - 5.0%</option>
+    <option value="0.000">Alaska - 0.0%</option>
+    <option value="0.045">Arizona - 4.5%</option>
+    <option value="0.060">Arkansas - 6.0%</option>
+    <option value="0.093">California - 9.3%</option>
+    <option value="0.0455">Colorado - 4.55%</option>
+    <option value="0.050">Connecticut - 5.0%</option>
+    <option value="0.066">Delaware - 6.6%</option>
+    <option value="0.000">Florida - 0.0%</option>
+    <option value="0.060">Georgia - 6.0%</option>
+    <option value="0.072">Hawaii - 7.2%</option>
+    <option value="0.069">Idaho - 6.9%</option>
+    <option value="0.0495">Illinois - 4.95%</option>
+    <option value="0.0323">Indiana - 3.23%</option>
+    <option value="0.0663">Iowa - 6.63%</option>
+    <option value="0.057">Kansas - 5.7%</option>
+    <option value="0.050">Kentucky - 5.0%</option>
+    <option value="0.060">Louisiana - 6.0%</option>
+    <option value="0.0623">Maine - 6.23%</option>
+    <option value="0.0575">Maryland - 5.75%</option>
+    <option value="0.050">Massachusetts - 5.0%</option>
+    <option value="0.0425">Michigan - 4.25%</option>
+    <option value="0.0985">Minnesota - 9.85%</option>
+    <option value="0.050">Mississippi - 5.0%</option>
+    <option value="0.060">Missouri - 6.0%</option>
+    <option value="0.069">Montana - 6.9%</option>
+    <option value="0.0684">Nebraska - 6.84%</option>
+    <option value="0.000">Nevada - 0.0%</option>
+    <option value="0.000">New Hampshire - 0.0%</option>
+    <option value="0.0637">New Jersey - 6.37%</option>
+    <option value="0.049">New Mexico - 4.9%</option>
+    <option value="0.0609">New York - 6.09%</option>
+    <option value="0.0525">North Carolina - 5.25%</option>
+    <option value="0.029">North Dakota - 2.9%</option>
+    <option value="0.04797">Ohio - 4.797%</option>
+    <option value="0.050">Oklahoma - 5.0%</option>
+    <option value="0.099">Oregon - 9.9%</option>
+    <option value="0.0307">Pennsylvania - 3.07%</option>
+    <option value="0.0375">Rhode Island - 3.75%</option>
+    <option value="0.070">South Carolina - 7.0%</option>
+    <option value="0.000">South Dakota - 0.0%</option>
+    <option value="0.010">Tennessee - 1.0%</option>
+    <option value="0.000">Texas - 0.0%</option>
+    <option value="0.0495">Utah - 4.95%</option>
+    <option value="0.0875">Vermont - 8.75%</option>
+    <option value="0.0575">Virginia - 5.75%</option>
+    <option value="0.000">Washington - 0.0%</option>
+    <option value="0.065">West Virginia - 6.5%</option>
+    <option value="0.0765">Wisconsin - 7.65%</option>
+    <option value="0.000">Wyoming - 0.0%</option>
+  </select>
+
+  <label for="deductions">Other Deductions ($):</label>
+  <input type="number" id="deductions" placeholder="Enter deductions" />
+
+  <button onclick="calculatePaycheck()">Calculate Net Pay</button>
+  <div class="result" id="paycheckResult"></div>
+</div>
+
+<script>
+function calculatePaycheck() {
+  const wage = parseFloat(document.getElementById('wage').value);
+  const hours = parseFloat(document.getElementById('hours').value);
+  const stateSelect = document.getElementById('stateSelect');
+  const stateTaxRate = parseFloat(stateSelect.value);
+  const deductions = parseFloat(document.getElementById('deductions').value);
+
+  if(isNaN(wage) || isNaN(hours) || isNaN(stateTaxRate) || isNaN(deductions) || stateSelect.value === "") {
+    alert('Please fill in all fields correctly and select a state.');
+    return;
+  }
+
+  const grossPay = wage * hours;
+  const stateTax = grossPay * stateTaxRate;
+  const socialSecurity = grossPay * 0.062;
+  const medicare = grossPay * 0.0145;
+  const netPay = grossPay - stateTax - socialSecurity - medicare - deductions;
+
+  document.getElementById('paycheckResult').textContent = 
+    `Net Pay: $${netPay.toFixed(2)}`;
+}
+</script>
+</body>
+</html>
