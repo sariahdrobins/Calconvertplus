@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Temperature Converter</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f5f5f5; color: #333; }
+  .converter { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  label, select, input, button { display: block; width: 100%; margin-bottom: 15px; }
+  button { background: #6f42c1; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #593196; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="converter">
+  <h2>Temperature Converter</h2>
+  <label for="tempValue">Value:</label>
+  <input type="number" id="tempValue" placeholder="Enter temperature" />
+
+  <label for="fromTemp">From:</label>
+  <select id="fromTemp">
+    <option value="C">Celsius</option>
+    <option value="F">Fahrenheit</option>
+    <option value="K">Kelvin</option>
+  </select>
+
+  <label for="toTemp">To:</label>
+  <select id="toTemp">
+    <option value="C">Celsius</option>
+    <option value="F">Fahrenheit</option>
+    <option value="K">Kelvin</option>
+  </select>
+
+  <button onclick="convertTemp()">Convert</button>
+  <div class="result" id="tempResult"></div>
+</div>
+
+<script>
+function convertTemp() {
+  const value = parseFloat(document.getElementById('tempValue').value);
+  const from = document.getElementById('fromTemp').value;
+  const to = document.getElementById('toTemp').value;
+  if(isNaN(value)) { alert('Please enter a valid number'); return; }
+
+  let tempInC;
+  // Convert input to Celsius
+  if(from === 'C') tempInC = value;
+  else if(from === 'F') tempInC = (value - 32) * 5/9;
+  else if(from === 'K') tempInC = value - 273.15;
+
+  let result;
+  // Convert from Celsius to target unit
+  if(to === 'C') result = tempInC;
+  else if(to === 'F') result = (tempInC * 9/5) + 32;
+  else if(to === 'K') result = tempInC + 273.15;
+
+  document.getElementById('tempResult').textContent = `${value} ${from} = ${result.toFixed(2)} ${to}`;
+}
+</script>
+</body>
+</html>
