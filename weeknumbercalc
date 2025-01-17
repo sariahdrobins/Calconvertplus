@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Week Number Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #f7f9fa; padding: 20px; color: #333; }
+  .calculator { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, button { display: block; width: 100%; margin-bottom: 15px; }
+  input, button { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #343a40; color: #fff; border: none; cursor: pointer; }
+  button:hover { background: #23272b; }
+  .result { font-weight: bold; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <h2>Week Number Calculator</h2>
+  <label for="anyDate">Enter a Date:</label>
+  <input type="date" id="anyDate" />
+
+  <button onclick="calculateWeekNumber()">Calculate Week Number</button>
+  <div class="result" id="weekNumberResult"></div>
+</div>
+
+<script>
+function calculateWeekNumber() {
+  const dateInput = document.getElementById('anyDate').value;
+  if(!dateInput) {
+    alert('Please select a date.');
+    return;
+  }
+  const date = new Date(dateInput);
+  // ISO week date weeks start on Monday
+  const target = new Date(date.valueOf());
+  const dayNr = (date.getDay() + 6) % 7; 
+  target.setDate(target.getDate() - dayNr + 3);
+  const firstThursday = new Date(target.getFullYear(),0,4);
+  const diff = target - firstThursday;
+  const weekNumber = 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
+  
+  document.getElementById('weekNumberResult').textContent = `Week Number: ${weekNumber}`;
+}
+</script>
+</body>
+</html>
