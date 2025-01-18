@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Calorie Intake Calculator</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; background: #e9ecef; padding: 20px; color: #333; }
+  .container { max-width: 600px; margin: auto; }
+  .tabs { display: flex; margin-bottom: 20px; }
+  .tabs button { flex: 1; padding: 10px; border: 1px solid #ccc; background: #007BFF; color: #fff; cursor: pointer; }
+  .tabs button:hover { background: #0056b3; }
+  .tabs button.active { background: #0056b3; }
+  .calculator { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
+  input, select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #28a745; color: #fff; padding: 10px; border: none; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #1e7e34; }
+  .result, .table-container { font-weight: bold; margin-top: 15px; }
+  .table-container table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  .table-container th, .table-container td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="calculator">
+    <h2>Calorie Intake Calculator</h2>
+    <label for="weight">Weight (lbs):</label>
+    <input type="number" id="weight" placeholder="Enter weight in pounds" step="0.1" />
+
+    <label for="heightFeet">Height:</label>
+    <div style="display: flex; gap: 10px;">
+      <input type="number" id="heightFeet" placeholder="Feet" min="0" style="flex: 1;" />
+      <input type="number" id="heightInches" placeholder="Inches" min="0" max="11" style="flex: 1;" />
+    </div>
+
+    <label for="age">Age (years):</label>
+    <input type="number" id="age" placeholder="Enter age" />
+
+    <label for="gender">Gender:</label>
+    <select id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label for="activity">Activity Level:</label>
+    <select id="activity">
+      <option value="1.2">Sedentary (little or no exercise)</option>
+      <option value="1.375">Lightly active (light exercise 1-3 days/week)</option>
+      <option value="1.55">Moderately active (moderate exercise 3-5 days/week)</option>
+      <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+      <option value="1.9">Extra active (very hard exercise or physical job)</option>
+    </select>
+
+    <button onclick="calculateCalories()">Calculate Daily Calories</button>
+    <div class="result" id="calorieResult"></div>
+
+    <div class="tabs">
+      <button id="lossTab" class="active" onclick="showTable('loss')">Weight Loss</button>
+      <button id="gainTab" onclick="showTable('gain')">Weight Gain</button>
+    </div>
+    <div class="table-container" id="tableContainer">
+      <table id="lossTable">
+        <thead>
+          <tr>
+            <th>Goal</th>
+            <th>Calories</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mild Loss (0.5 lb/week)</td><td id="mildLoss"></td></tr>
+          <tr><td>Moderate Loss (1 lb/week)</td><td id="moderateLoss"></td></tr>
+          <tr><td>Extreme Loss (2 lb/week)</td><td id="extremeLoss"></td></tr>
+        </tbody>
+      </table>
+      <table id="gainTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Goal</th>
+            <th>Calories</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Mild Gain (0.5 lb/week)</td><td id="mildGain"></td></tr>
+          <tr><td>Moderate Gain (1 lb/week)</td><td id="moderateGain"></td></tr>
+          <tr><td>Extreme Gain (2 lb/week)</td><td id="extremeGain"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function calculateCalories() {
+  const weight = parseFloat(document.getElementById('weight').value);
+  const heightFeet = parseFloat(document.getElementById('heightFeet').value);
+  const heightInches = parseFloat(document.getElementById('heightInches').value);
+  const height = heightFeet * 12 + (heightInches || 0);
+  const age = parseFloat(document.getElementById('age').value);
+  const gender = document.getElementById('gender').value;
+  const activity = parseFloat(document.getElementById('activity').value);
+
+  if (isNaN(weight) || isNaN(height) || isNaN(age) || !gender || isNaN(activity)) {
+    alert('Please fill in all fields with valid numbers.');
+    return;
+  }
+
+  let bmr;
+  if (gender === 'male') {
+    bmr = 66 + (6.23 * weight) + (12.7 * height) - (6.8 * age);
+  } else {
+    bmr = 655 + (4.35 * weight) + (4.7 * height) - (4.7 * age);
+  }
+
+  const maintainCalories = bmr * activity;
+  document.getElementById('calorieResult').textContent = `Maintain Calories: ${maintainCalories.toFixed(0)} calories/day`;
+
+  document.getElementById('mildLoss').textContent = (maintainCalories - 250).toFixed(0);
+  document.getElementById('moderateLoss').textContent = (maintainCalories - 500).toFixed(0);
+  document.getElementById('extremeLoss').textContent = (maintainCalories - 1000).toFixed(0);
+
+  document.getElementById('mildGain').textContent = (maintainCalories + 250).toFixed(0);
+  document.getElementById('moderateGain').textContent = (maintainCalories + 500).toFixed(0);
+  document.getElementById('extremeGain').textContent = (maintainCalories + 1000).toFixed(0);
+}
+
+function showTable(type) {
+  document.getElementById('lossTable').style.display = type === 'loss' ? 'table' : 'none';
+  document.getElementById('gainTable').style.display = type === 'gain' ? 'table' : 'none';
+  document.getElementById('lossTab').classList.toggle('active', type === 'loss');
+  document.getElementById('gainTab').classList.toggle('active', type === 'gain');
+}
+</script>
+</body>
+</html>
+
