@@ -4,53 +4,111 @@
 <meta charset="UTF-8" />
 <title>Age Calculator</title>
 <style>
-  body { font-family: 'Roboto', sans-serif; background: #f7f9fa; padding: 20px; color: #333; }
-  .calculator { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  label, input, button { display: block; width: 100%; margin-bottom: 15px; }
-  input, button { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
-  button { background: ##007BFF; color: #fff; border: none; cursor: pointer; }
-  button:hover { background: #d39e00; }
+  body { font-family: 'Roboto', sans-serif; background: #f5f5f5; padding: 20px; color: #333; }
+  .calculator { max-width: 500px; margin: auto; background: #fff; padding: 20px; 
+                border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  h2 { text-align: center; }
+  label { display: block; margin-top: 10px; }
+  input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+  button { background: #007BFF; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
   .result { font-weight: bold; margin-top: 15px; }
+  .calendar-icon { cursor: pointer; margin-left: 5px; }
 </style>
 </head>
 <body>
+
 <div class="calculator">
   <h2>Age Calculator</h2>
-  <label for="birthDate">Enter Your Birthdate:</label>
-  <input type="date" id="birthDate" />
+  <label for="dob">
+    Date of Birth:
+    <span class="calendar-icon" onclick="document.getElementById('dob').focus()">📅</span>
+  </label>
+  <input type="date" id="dob" />
 
-  <button onclick="calculateAge()">Calculate Age</button>
-  <div class="result" id="ageResult"></div>
+  <label for="tob">Time of Birth (Optional):</label>
+  <input type="time" id="tob" />
+
+  <button onclick="calculateCurrentAge()">Calculate Current Age</button>
+  <div class="result" id="currentAgeResult"></div>
+</div>
+
+<div class="calculator">
+  <h2>Age at the Date of</h2>
+  <label for="targetDate">
+    Select Date:
+    <span class="calendar-icon" onclick="document.getElementById('targetDate').focus()">📅</span>
+  </label>
+  <input type="date" id="targetDate" />
+
+  <button onclick="calculateAgeAtDate()">Calculate Age at Selected Date</button>
+  <div class="result" id="ageAtDateResult"></div>
 </div>
 
 <script>
-function calculateAge() {
-  const birthDateInput = document.getElementById('birthDate').value;
-  if(!birthDateInput) {
-    alert('Please select your birthdate.');
+function calculateCurrentAge() {
+  const dobInput = document.getElementById('dob').value;
+  const tobInput = document.getElementById('tob').value;
+  if(!dobInput) { 
+    alert('Please enter your date of birth.');
+    return;
+  }
+  
+  // Construct birth date-time from inputs; if time is not provided, default to 00:00
+  const birthDateTime = new Date(dobInput + 'T' + (tobInput || '00:00'));
+  const now = new Date();
+  
+  let ageDifMs = now - birthDateTime;
+  if(ageDifMs < 0) { 
+    alert('Birth date is in the future!');
+    return;
+  }
+  
+  // Convert difference to years, months, days, hours, minutes, seconds
+  let ageDate = new Date(ageDifMs); // milliseconds from epoch
+  let years = ageDate.getUTCFullYear() - 1970;
+  let months = ageDate.getUTCMonth();
+  let days = ageDate.getUTCDate() - 1; 
+  let hours = ageDate.getUTCHours();
+  let minutes = ageDate.getUTCMinutes();
+  let seconds = ageDate.getUTCSeconds();
+
+  document.getElementById('currentAgeResult').textContent = 
+    `Current Age: ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds.`;
+}
+
+function calculateAgeAtDate() {
+  const dobInput = document.getElementById('dob').value;
+  const tobInput = document.getElementById('tob').value;
+  const targetDateInput = document.getElementById('targetDate').value;
+
+  if(!dobInput || !targetDateInput) {
+    alert('Please enter both your date of birth and the target date.');
     return;
   }
 
-  const birthDate = new Date(birthDateInput);
-  const now = new Date();
-  
-  let years = now.getFullYear() - birthDate.getFullYear();
-  let months = now.getMonth() - birthDate.getMonth();
-  let days = now.getDate() - birthDate.getDate();
+  // Construct birth date-time and target date-time
+  const birthDateTime = new Date(dobInput + 'T' + (tobInput || '00:00'));
+  const targetDateTime = new Date(targetDateInput);
 
-  if(days < 0) {
-    months--;
-    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-  }
-  if(months < 0) {
-    years--;
-    months += 12;
+  if(targetDateTime < birthDateTime) {
+    alert('Target date is before your birth date!');
+    return;
   }
 
-  document.getElementById('ageResult').textContent = 
-    `You are ${years} years, ${months} months, and ${days} days old.`;
+  let ageDifMs = targetDateTime - birthDateTime;
+  let ageDate = new Date(ageDifMs);
+  let years = ageDate.getUTCFullYear() - 1970;
+  let months = ageDate.getUTCMonth();
+  let days = ageDate.getUTCDate() - 1;
+  let hours = ageDate.getUTCHours();
+  let minutes = ageDate.getUTCMinutes();
+  let seconds = ageDate.getUTCSeconds();
+
+  document.getElementById('ageAtDateResult').textContent = 
+    `Age on ${targetDateInput}: ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds.`;
 }
 </script>
+
 </body>
 </html>
