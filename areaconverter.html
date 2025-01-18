@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Area Converter & Calculators</title>
+<style>
+  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f5f5f5; color: #333; }
+  .converter, .shape-calculator { max-width: 400px; margin: 20px auto; background: #fff; padding: 20px; 
+             border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  h2 { text-align: center; }
+  .line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  label { margin-bottom: 5px; }
+  input, select, button { width: 100%; margin-bottom: 15px; }
+  .line label, .line select { width: auto; }
+  .line select { flex: 1; }
+  button { 
+    width: 100%; 
+    background: #007BFF; 
+    color: white; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+  }
+  button:hover { background: #0056b3; }
+  .result { font-weight: bold; margin-top: 15px; }
+  .input-unit-container { display: flex; gap: 10px; margin-bottom: 15px; }
+  .input-unit-container input { flex: 2; }
+  .input-unit-container select { flex: 1; }
+  .unit-select { padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+  .shape-image { display: block; margin: 10px auto; }
+</style>
+</head>
+<body>
+
+<!-- Area Converter Section -->
+<div class="converter">
+  <h2>Area Converter</h2>
+  <label for="areaValue">Value:</label>
+  <input type="number" id="areaValue" placeholder="Enter value" />
+  
+  <div class="line">
+    <label for="fromArea">From:</label>
+    <select id="fromArea">
+      <option value="sqm">Square Meter</option>
+      <option value="sqft">Square Foot</option>
+      <option value="acre">Acre</option>
+      <option value="hectare">Hectare</option>
+      <option value="sqkm">Square Kilometer</option>
+      <option value="sqcm">Square Centimeter</option>
+      <option value="sqmm">Square Millimeter</option>
+      <option value="sqµm">Square Micrometer</option>
+      <option value="sqmi">Square Mile</option>
+      <option value="sqyd">Square Yard</option>
+      <option value="sqin">Square Inch</option>
+    </select>
+    
+    <label for="toArea">To:</label>
+    <select id="toArea">
+      <option value="sqm">Square Meter</option>
+      <option value="sqft">Square Foot</option>
+      <option value="acre">Acre</option>
+      <option value="hectare">Hectare</option>
+      <option value="sqkm">Square Kilometer</option>
+      <option value="sqcm">Square Centimeter</option>
+      <option value="sqmm">Square Millimeter</option>
+      <option value="sqµm">Square Micrometer</option>
+      <option value="sqmi">Square Mile</option>
+      <option value="sqyd">Square Yard</option>
+      <option value="sqin">Square Inch</option>
+    </select>
+  </div>
+
+  <button onclick="convertArea()">Convert</button>
+  <div class="result" id="areaResult"></div>
+</div>
+
+<script>
+function convertArea() {
+  const value = parseFloat(document.getElementById('areaValue').value);
+  const from = document.getElementById('fromArea').value;
+  const to = document.getElementById('toArea').value;
+  if(isNaN(value)) { alert('Please enter a valid number'); return; }
+  
+  // Conversion factors to square meters
+  const factors = {
+    sqm: 1,
+    sqft: 0.092903,
+    acre: 4046.86,
+    hectare: 10000,
+    sqkm: 1e6,
+    sqcm: 0.0001,
+    sqmm: 0.000001,
+    "sqµm": 1e-12,
+    sqmi: 2589988.110336,
+    sqyd: 0.836127,
+    sqin: 0.00064516
+  };
+  
+  const valueInSqM = value * factors[from];
+  const converted = valueInSqM / factors[to];
+  
+  document.getElementById('areaResult').textContent = 
+    `${value} ${from} = ${converted.toFixed(4)} ${to}`;
+}
+</script>
+
+<!-- Global length factors for unit conversion using full words -->
+<script>
+const lengthFactors = {
+  Kilometers: 1000,
+  Meters: 1,
+  Centimeters: 0.01,
+  Feet: 0.3048,
+  Yards: 0.9144,
+  Inches: 0.0254,
+  Miles: 1609.344
+};
+</script>
+
+<!-- Rectangle Area Calculator -->
+<div class="shape-calculator">
+  <h2>Rectangle Area Calculator</h2>
+  <svg class="shape-image" width="100" height="60">
+    <rect x="10" y="10" width="80" height="40" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="rectLength">Length:</label>
+  <div class="input-unit-container">
+    <input type="number" id="rectLength" placeholder="Enter length" />
+    <select id="rectLengthUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <label for="rectWidth">Width:</label>
+  <div class="input-unit-container">
+    <input type="number" id="rectWidth" placeholder="Enter width" />
+    <select id="rectWidthUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateRectangle()">Calculate Area</button>
+  <div class="result" id="rectResult"></div>
+</div>
+
+<script>
+function calculateRectangle() {
+  const length = parseFloat(document.getElementById('rectLength').value);
+  const width = parseFloat(document.getElementById('rectWidth').value);
+  if(isNaN(length) || isNaN(width)) { alert('Please enter valid numbers'); return; }
+  
+  const lengthUnit = document.getElementById('rectLengthUnit').value;
+  const widthUnit = document.getElementById('rectWidthUnit').value;
+  
+  const lengthInM = length * lengthFactors[lengthUnit];
+  const widthInM = width * lengthFactors[widthUnit];
+  
+  const area = lengthInM * widthInM;
+  document.getElementById('rectResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+<!-- Square Area Calculator -->
+<div class="shape-calculator">
+  <h2>Square Area Calculator</h2>
+  <svg class="shape-image" width="60" height="60">
+    <rect x="10" y="10" width="40" height="40" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="squareSide">Side Length:</label>
+  <div class="input-unit-container">
+    <input type="number" id="squareSide" placeholder="Enter side length" />
+    <select id="squareSideUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateSquare()">Calculate Area</button>
+  <div class="result" id="squareResult"></div>
+</div>
+
+<script>
+function calculateSquare() {
+  const side = parseFloat(document.getElementById('squareSide').value);
+  if(isNaN(side)) { alert('Please enter a valid number'); return; }
+  
+  const sideUnit = document.getElementById('squareSideUnit').value;
+  const sideInM = side * lengthFactors[sideUnit];
+  const area = sideInM * sideInM;
+  
+  document.getElementById('squareResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+<!-- Circle Area Calculator -->
+<div class="shape-calculator">
+  <h2>Circle Area Calculator</h2>
+  <svg class="shape-image" width="60" height="60">
+    <circle cx="30" cy="30" r="20" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="circleRadius">Radius:</label>
+  <div class="input-unit-container">
+    <input type="number" id="circleRadius" placeholder="Enter radius" />
+    <select id="circleRadiusUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateCircle()">Calculate Area</button>
+  <div class="result" id="circleResult"></div>
+</div>
+
+<script>
+function calculateCircle() {
+  const radius = parseFloat(document.getElementById('circleRadius').value);
+  if(isNaN(radius)) { alert('Please enter a valid number'); return; }
+  
+  const radiusUnit = document.getElementById('circleRadiusUnit').value;
+  const radiusInM = radius * lengthFactors[radiusUnit];
+  
+  const area = Math.PI * radiusInM * radiusInM;
+  document.getElementById('circleResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+<!-- Trapezoid Area Calculator -->
+<div class="shape-calculator">
+  <h2>Trapezoid Area Calculator</h2>
+  <svg class="shape-image" width="100" height="60">
+    <polygon points="20,50 80,50 60,10 40,10" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="trapBase1">Base 1:</label>
+  <div class="input-unit-container">
+    <input type="number" id="trapBase1" placeholder="Enter first base" />
+    <select id="trapBase1Unit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <label for="trapBase2">Base 2:</label>
+  <div class="input-unit-container">
+    <input type="number" id="trapBase2" placeholder="Enter second base" />
+    <select id="trapBase2Unit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <label for="trapHeight">Height:</label>
+  <div class="input-unit-container">
+    <input type="number" id="trapHeight" placeholder="Enter height" />
+    <select id="trapHeightUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateTrapezoid()">Calculate Area</button>
+  <div class="result" id="trapezoidResult"></div>
+</div>
+
+<script>
+function calculateTrapezoid() {
+  const base1 = parseFloat(document.getElementById('trapBase1').value);
+  const base2 = parseFloat(document.getElementById('trapBase2').value);
+  const height = parseFloat(document.getElementById('trapHeight').value);
+  if(isNaN(base1) || isNaN(base2) || isNaN(height)) { alert('Please enter valid numbers'); return; }
+  
+  const base1Unit = document.getElementById('trapBase1Unit').value;
+  const base2Unit = document.getElementById('trapBase2Unit').value;
+  const heightUnit = document.getElementById('trapHeightUnit').value;
+  
+  const base1InM = base1 * lengthFactors[base1Unit];
+  const base2InM = base2 * lengthFactors[base2Unit];
+  const heightInM = height * lengthFactors[heightUnit];
+  
+  const area = ((base1InM + base2InM) / 2) * heightInM;
+  document.getElementById('trapezoidResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+<!-- Parallelogram Area Calculator -->
+<div class="shape-calculator">
+  <h2>Parallelogram Area Calculator</h2>
+  <svg class="shape-image" width="100" height="60">
+    <polygon points="20,10 80,10 60,50 0,50" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="paraBase">Base:</label>
+  <div class="input-unit-container">
+    <input type="number" id="paraBase" placeholder="Enter base" />
+    <select id="paraBaseUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <label for="paraHeight">Height:</label>
+  <div class="input-unit-container">
+    <input type="number" id="paraHeight" placeholder="Enter height" />
+    <select id="paraHeightUnit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateParallelogram()">Calculate Area</button>
+  <div class="result" id="paraResult"></div>
+</div>
+
+<script>
+function calculateParallelogram() {
+  const base = parseFloat(document.getElementById('paraBase').value);
+  const height = parseFloat(document.getElementById('paraHeight').value);
+  if(isNaN(base) || isNaN(height)) { alert('Please enter valid numbers'); return; }
+  
+  const baseUnit = document.getElementById('paraBaseUnit').value;
+  const heightUnit = document.getElementById('paraHeightUnit').value;
+  
+  const baseInM = base * lengthFactors[baseUnit];
+  const heightInM = height * lengthFactors[heightUnit];
+  
+  const area = baseInM * heightInM;
+  document.getElementById('paraResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+<!-- Ellipse Area Calculator -->
+<div class="shape-calculator">
+  <h2>Ellipse Area Calculator</h2>
+  <svg class="shape-image" width="100" height="60">
+    <ellipse cx="50" cy="30" rx="40" ry="20" style="fill:none;stroke:black;stroke-width:2"/>
+  </svg>
+  <label for="ellipseRadius1">Radius 1:</label>
+  <div class="input-unit-container">
+    <input type="number" id="ellipseRadius1" placeholder="Enter radius 1" />
+    <select id="ellipseRadius1Unit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <label for="ellipseRadius2">Radius 2:</label>
+  <div class="input-unit-container">
+    <input type="number" id="ellipseRadius2" placeholder="Enter radius 2" />
+    <select id="ellipseRadius2Unit" class="unit-select">
+      <option value="Meters">Meters</option>
+      <option value="Kilometers">Kilometers</option>
+      <option value="Centimeters">Centimeters</option>
+      <option value="Feet">Feet</option>
+      <option value="Yards">Yards</option>
+      <option value="Inches">Inches</option>
+      <option value="Miles">Miles</option>
+    </select>
+  </div>
+  
+  <button onclick="calculateEllipse()">Calculate Area</button>
+  <div class="result" id="ellipseResult"></div>
+</div>
+
+<script>
+function calculateEllipse() {
+  const r1 = parseFloat(document.getElementById('ellipseRadius1').value);
+  const r2 = parseFloat(document.getElementById('ellipseRadius2').value);
+  if(isNaN(r1) || isNaN(r2)) { alert('Please enter valid numbers'); return; }
+  
+  const r1Unit = document.getElementById('ellipseRadius1Unit').value;
+  const r2Unit = document.getElementById('ellipseRadius2Unit').value;
+  
+  const r1InM = r1 * lengthFactors[r1Unit];
+  const r2InM = r2 * lengthFactors[r2Unit];
+  
+  const area = Math.PI * r1InM * r2InM;
+  document.getElementById('ellipseResult').textContent = `Area: ${area.toFixed(4)} square meters`;
+}
+</script>
+
+</body>
+</html>
