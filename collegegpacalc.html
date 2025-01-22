@@ -1,114 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>College GPA Calculator</title>
-<style>
-  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #f7f9fa; color: #333; }
-  .calculator { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
-  button { background: #007BFF; color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
-  button:hover { background: #0056b3; }
-  .result { font-weight: bold; margin-top: 15px; }
-</style>
+  <meta charset="UTF-8">
+  <title>College GPA Calculator</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px; 
+      background: #f7f9fa; 
+      color: #333; 
+    }
+    .calculator { 
+      max-width: 900px; 
+      margin: auto; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+    }
+    h2 { 
+      text-align: center; 
+      margin-bottom: 20px;
+    }
+    .semester { 
+      border: 1px solid #ccc; 
+      padding: 15px; 
+      border-radius: 6px; 
+      margin-bottom: 20px; 
+      background-color: #f9f9f9;
+      position: relative;
+    }
+    .semester-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 10px; 
+    }
+    .semester-header h3 { 
+      margin: 0; 
+    }
+    .removeSemesterBtn { 
+      background: transparent; 
+      border: none; 
+      font-size: 1.5em; 
+      color: #dc3545; 
+      cursor: pointer; 
+      line-height: 1;
+    }
+    .removeSemesterBtn:hover { 
+      color: #c82333; 
+    }
+    .courses { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+    }
+    .course { 
+      display: flex; 
+      gap: 10px; 
+      align-items: center; 
+      flex-wrap: wrap;
+    }
+    .course input[type="text"], .course input[type="number"], .course select { 
+      flex: 1 1 200px; 
+      padding: 8px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; 
+      box-sizing: border-box;
+    }
+    .removeCourseBtn { 
+      background: transparent; 
+      border: none; 
+      font-size: 1.2em; 
+      color: #dc3545; 
+      cursor: pointer; 
+      margin-left: 5px;
+      flex: 0 0 auto;
+    }
+    .removeCourseBtn:hover { 
+      color: #c82333; 
+    }
+    .addCourseBtn, .addSemesterBtn, #calculateBtn { 
+      background: #4aa0be; 
+      color: white; 
+      border: none; 
+      padding: 10px 15px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      transition: background 0.3s; 
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+    .addCourseBtn:hover, .addSemesterBtn:hover, #calculateBtn:hover { 
+      background: #3d8fae; 
+    }
+    .result { 
+      font-weight: bold; 
+      margin-top: 15px; 
+      text-align: center; 
+      font-size: 1.5em;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+    }
+    .example { 
+      font-size: 0.9em; 
+      color: #555; 
+      margin-bottom: 10px; 
+    }
+    @media (max-width: 600px) {
+      .course { 
+        flex-direction: column; 
+        align-items: flex-start; 
+      }
+      .course input[type="text"], .course input[type="number"], .course select { 
+        flex: none; 
+        width: 100%; 
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="calculator">
-  <h2>College GPA Calculator</h2>
-  <p>Enter credits and letter grades for up to 5 courses:</p>
-
-  <div id="courses">
-    <div class="course">
-      <label>Course 1 Credits:</label>
-      <input type="number" class="credit" placeholder="Credits" step="0.5" />
-      <label>Course 1 Grade:</label>
-      <select class="grade">
-        <option value="">Select grade</option>
-        <option value="4">A</option>
-        <option value="3">B</option>
-        <option value="2">C</option>
-        <option value="1">D</option>
-        <option value="0">F</option>
-      </select>
+  <div class="calculator">
+    <h2>College GPA Calculator</h2>
+    <p class="example">*Example: Course Name - 3 Credits, Grade A</p>
+    
+    <div id="semesters">
+      <!-- Initial Semester -->
+      <div class="semester" data-semester="1">
+        <div class="semester-header">
+          <h3>Semester 1</h3>
+          <button class="removeSemesterBtn" title="Remove Semester">×</button>
+        </div>
+        
+        <div class="courses">
+          <!-- Initial 4 Courses -->
+          <div class="course">
+            <input type="text" class="courseName" placeholder="Course Name (e.g., Calculus)" required />
+            <input type="number" class="credit" placeholder="Credits (e.g., 3)" step="0.5" min="0" required />
+            <select class="grade" required>
+              <option value="">Select grade</option>
+              <option value="4.0">A+</option>
+              <option value="4.0">A</option>
+              <option value="3.7">A-</option>
+              <option value="3.3">B+</option>
+              <option value="3.0">B</option>
+              <option value="2.7">B-</option>
+              <option value="2.3">C+</option>
+              <option value="2.0">C</option>
+              <option value="1.7">C-</option>
+              <option value="1.3">D+</option>
+              <option value="1.0">D</option>
+              <option value="0.7">D-</option>
+              <option value="0.0">F</option>
+            </select>
+            <button class="removeCourseBtn" title="Remove Course">×</button>
+          </div>
+          <div class="course">
+            <input type="text" class="courseName" placeholder="Course Name (e.g., Physics)" required />
+            <input type="number" class="credit" placeholder="Credits (e.g., 4)" step="0.5" min="0" required />
+            <select class="grade" required>
+              <option value="">Select grade</option>
+              <option value="4.0">A+</option>
+              <option value="4.0">A</option>
+              <option value="3.7">A-</option>
+              <option value="3.3">B+</option>
+              <option value="3.0">B</option>
+              <option value="2.7">B-</option>
+              <option value="2.3">C+</option>
+              <option value="2.0">C</option>
+              <option value="1.7">C-</option>
+              <option value="1.3">D+</option>
+              <option value="1.0">D</option>
+              <option value="0.7">D-</option>
+              <option value="0.0">F</option>
+            </select>
+            <button class="removeCourseBtn" title="Remove Course">×</button>
+          </div>
+          <div class="course">
+            <input type="text" class="courseName" placeholder="Course Name (e.g., Literature)" required />
+            <input type="number" class="credit" placeholder="Credits (e.g., 3)" step="0.5" min="0" required />
+            <select class="grade" required>
+              <option value="">Select grade</option>
+              <option value="4.0">A+</option>
+              <option value="4.0">A</option>
+              <option value="3.7">A-</option>
+              <option value="3.3">B+</option>
+              <option value="3.0">B</option>
+              <option value="2.7">B-</option>
+              <option value="2.3">C+</option>
+              <option value="2.0">C</option>
+              <option value="1.7">C-</option>
+              <option value="1.3">D+</option>
+              <option value="1.0">D</option>
+              <option value="0.7">D-</option>
+              <option value="0.0">F</option>
+            </select>
+            <button class="removeCourseBtn" title="Remove Course">×</button>
+          </div>
+          <div class="course">
+            <input type="text" class="courseName" placeholder="Course Name (e.g., Chemistry)" required />
+            <input type="number" class="credit" placeholder="Credits (e.g., 2)" step="0.5" min="0" required />
+            <select class="grade" required>
+              <option value="">Select grade</option>
+              <option value="4.0">A+</option>
+              <option value="4.0">A</option>
+              <option value="3.7">A-</option>
+              <option value="3.3">B+</option>
+              <option value="3.0">B</option>
+              <option value="2.7">B-</option>
+              <option value="2.3">C+</option>
+              <option value="2.0">C</option>
+              <option value="1.7">C-</option>
+              <option value="1.3">D+</option>
+              <option value="1.0">D</option>
+              <option value="0.7">D-</option>
+              <option value="0.0">F</option>
+            </select>
+            <button class="removeCourseBtn" title="Remove Course">×</button>
+          </div>
+        </div>
+        
+        <button class="addCourseBtn">Add Course</button>
+      </div>
     </div>
-    <div class="course">
-      <label>Course 2 Credits:</label>
-      <input type="number" class="credit" placeholder="Credits" step="0.5" />
-      <label>Course 2 Grade:</label>
-      <select class="grade">
-        <option value="">Select grade</option>
-        <option value="4">A</option>
-        <option value="3">B</option>
-        <option value="2">C</option>
-        <option value="1">D</option>
-        <option value="0">F</option>
-      </select>
-    </div>
-    <div class="course">
-      <label>Course 3 Credits:</label>
-      <input type="number" class="credit" placeholder="Credits" step="0.5" />
-      <label>Course 3 Grade:</label>
-      <select class="grade">
-        <option value="">Select grade</option>
-        <option value="4">A</option>
-        <option value="3">B</option>
-        <option value="2">C</option>
-        <option value="1">D</option>
-        <option value="0">F</option>
-      </select>
-    </div>
-    <div class="course">
-      <label>Course 4 Credits:</label>
-      <input type="number" class="credit" placeholder="Credits" step="0.5" />
-      <label>Course 4 Grade:</label>
-      <select class="grade">
-        <option value="">Select grade</option>
-        <option value="4">A</option>
-        <option value="3">B</option>
-        <option value="2">C</option>
-        <option value="1">D</option>
-        <option value="0">F</option>
-      </select>
-    </div>
-    <div class="course">
-      <label>Course 5 Credits:</label>
-      <input type="number" class="credit" placeholder="Credits" step="0.5" />
-      <label>Course 5 Grade:</label>
-      <select class="grade">
-        <option value="">Select grade</option>
-        <option value="4">A</option>
-        <option value="3">B</option>
-        <option value="2">C</option>
-        <option value="1">D</option>
-        <option value="0">F</option>
-      </select>
-    </div>
-  </div>
-
-  <button onclick="calculateGPA()">Calculate GPA</button>
-  <div class="result" id="gpaResult"></div>
-</div>
-
-<script>
-function calculateGPA() {
-  const credits = document.querySelectorAll('.credit');
-  const grades = document.querySelectorAll('.grade');
-  let totalQualityPoints = 0;
-  let totalCredits = 0;
-
-  for(let i = 0; i < credits.length; i++) {
-    const credit = parseFloat(credits[i].value);
-    const grade = parseFloat(grades[i].value);
-    if(!isNaN(credit) && !isNaN(grade)) {
-      totalQualityPoints += credit * grade;
-      totalCredits += credit;
-    }
-  }
-
-  const gpa = totalCredits ? totalQualityPoints / totalCredits : 0;
-  document.getElementById('gpaResult').textContent = `Your GPA: ${gpa.toFixed(2)}`;
-}
-</script>
-</body>
+    
+    <button id="addSemesterBtn" class="addSemesterBtn">Add Another Semester</button>
+    <button id="calculateBtn" class="calculateBtn">Calculate GPA</button>
+    <div class="result" id="gpaResult"></div>
+    
+    <!-- Templates -->
+    <template id="courseTemplate">
+      <div class="course">
+        <input type="text" class="courseName" placeholder="Course Name (e.g., Biology)" required />
+        <input type="number" class="credit" placeholder="Credits (e.g., 3)" step="0.5" min="0" required />
+        <select class="grade" required>
+          <option value="">Select grade</option>
+          <option value="4.0">A+</option>
+          <option value="4.0">A</option>
+          <option value="3.7">A-</option>
+          <option value="3.3">B+</option>
+          <option value="3.0">B</option>
+          <option value="2.7">B-</option>
+          <option value="2.3">C+</option>
+          <option value="2.0">C</option>
+          <option value="1.7">C-</option>
+          <option value="1.3">D+</option>
+          <option value="1.0">D</option>
+          <option value="0.7">D-</option>
+          <option value="0.0">F</option>
+        </select>
+        <button class="removeCourseBtn" title="Remove Course">×</button>
+      </div>
+    </template>
+    
+    <template id="semesterTemplate">
+      <div class="semester" data-semester="">
+        <div class="semester-header">
+          <h3>Semester </h3>
+          <button class="removeSemesterBtn" title="Remove Semester">×</button>
+        </div>
+        <div class="courses">
+          <!-- Courses will be added dynamically -->
+        </div>
+        <button class="addCourseBtn">Add Course</button>
+      </div>
+    </template>
+    
+    <script>
+      // Mapping of letter grades to GPA points
+      const gradeToPoint = {
+        "A+": 4.0,
+        "A": 4.0,
+        "A-": 3.7,
+        "B+": 3.3,
+        "B": 3.0,
+        "B-": 2.7,
+        "C+": 2.3,
+        "C": 2.0,
+        "C-": 1.7,
+        "D+": 1.3,
+        "D": 1.0,
+        "D-": 0.7,
+        "F": 0.0
+      };
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initialize the first semester with 4 courses
+        const initialSemester = document.querySelector('.semester');
+        const addCourseBtn = initialSemester.querySelector('.addCourseBtn');
+        for (let i = 0; i < 3; i++) { // Already has 1 course, add 3 more
+          addCourse(addCourseBtn);
+        }
+        
+        // Event listener for adding courses and removing courses/semesters
+        document.body.addEventListener('click', function(event) {
+          if (event.target.classList.contains('addCourseBtn')) {
+            addCourse(event.target);
+          }
+          if (event.target.classList.contains('removeCourseBtn')) {
+            removeCourse(event.target);
+          }
+          if (event.target.classList.contains('removeSemesterBtn')) {
+            removeSemester(event.target);
+          }
+        });
+        
+        // Event listener for adding semesters
+        document.getElementById('addSemesterBtn').addEventListener('click', addSemester);
+        
+        // Event listener for calculating GPA
+        document.getElementById('calculateBtn').addEventListener('click', calculateGPA);
+      });
+      
+      // Function to add a new course within a semester
+      function addCourse(button) {
+        const coursesContainer = button.parentElement.querySelector('.courses');
+        const courseTemplate = document.getElementById('courseTemplate');
+        const newCourse = courseTemplate.content.cloneNode(true);
+        coursesContainer.appendChild(newCourse);
+      }
+      
+      // Function to remove a course
+      function removeCourse(button) {
+        const courseDiv = button.parentElement;
+        const coursesContainer = courseDiv.parentElement;
+        coursesContainer.removeChild(courseDiv);
+      }
+      
+      // Function to add a new semester
+      function addSemester() {
+        const semestersContainer = document.getElementById('semesters');
+        const semesterTemplate = document.getElementById('semesterTemplate');
+        const newSemester = semesterTemplate.content.cloneNode(true);
+        
+        // Update semester number
+        const semesterCount = semestersContainer.querySelectorAll('.semester').length + 1;
+        const header = newSemester.querySelector('.semester-header h3');
+        header.textContent = `Semester ${semesterCount}`;
+        const semesterDiv = newSemester.querySelector('.semester');
+        semesterDiv.setAttribute('data-semester', semesterCount);
+        
+        // Add initial 4 courses
+        const addCourseBtn = newSemester.querySelector('.addCourseBtn');
+        for (let i = 0; i < 4; i++) {
+          addCourse(addCourseBtn);
+        }
+        
+        semestersContainer.appendChild(newSemester);
+      }
+      
+      // Function to remove a semester
+      function removeSemester(button) {
+        const semesterDiv = button.closest('.semester');
+        const semestersContainer = document.getElementById('semesters');
+        semestersContainer.removeChild(semesterDiv);
+        
+        // Update semester numbers
+        updateSemesterLabels();
+      }
+      
+      // Function to update semester labels after removal
+      function updateSemesterLabels() {
+        const semesters = document.querySelectorAll('.semester');
+        semesters.forEach((semester, index) => {
+          const header = semester.querySelector('.semester-header h3');
+          header.textContent = `Semester ${index + 1}`;
+          semester.setAttribute('data-semester', index + 1);
+        });
+      }
+      
+      // Function to calculate GPA across all semesters and courses
+      function calculateGPA() {
+        const semesters = document.querySelectorAll('.semester');
+        let totalQualityPoints = 0;
+        let totalCredits = 0;
+        let errorMessages = [];
+        
+        semesters.forEach((semester, semesterIndex) => {
+          const courses = semester.querySelectorAll('.course');
+          courses.forEach((course, courseIndex) => {
+            const courseName = course.querySelector('.courseName').value.trim();
+            const creditInput = course.querySelector('.credit').value;
+            const gradeValue = course.querySelector('.grade').value;
+            let gradePoint = 0;
+            
+            // Determine grade point based on selected grade
+            switch (gradeValue) {
+              case "4.0": // A+ and A
+                gradePoint = 4.0;
+                break;
+              case "3.7": // A-
+                gradePoint = 3.7;
+                break;
+              case "3.3": // B+
+                gradePoint = 3.3;
+                break;
+              case "3.0": // B
+                gradePoint = 3.0;
+                break;
+              case "2.7": // B-
+                gradePoint = 2.7;
+                break;
+              case "2.3": // C+
+                gradePoint = 2.3;
+                break;
+              case "2.0": // C
+                gradePoint = 2.0;
+                break;
+              case "1.7": // C-
+                gradePoint = 1.7;
+                break;
+              case "1.3": // D+
+                gradePoint = 1.3;
+                break;
+              case "1.0": // D
+                gradePoint = 1.0;
+                break;
+              case "0.7": // D-
+                gradePoint = 0.7;
+                break;
+              case "0.0": // F
+                gradePoint = 0.0;
+                break;
+              default:
+                gradePoint = null;
+            }
+            
+            // Validation
+            if (!courseName && !creditInput && !gradeValue) {
+              // Completely empty course; skip
+              return;
+            }
+            if (!courseName) {
+              errorMessages.push(`Course name missing in Semester ${semesterIndex + 1}, Course ${courseIndex + 1}.`);
+            }
+            const credit = parseFloat(creditInput);
+            if (isNaN(credit) || credit <= 0) {
+              errorMessages.push(`Invalid credits in Semester ${semesterIndex + 1}, Course ${courseIndex + 1}.`);
+            }
+            if (gradePoint === null) {
+              errorMessages.push(`Grade not selected in Semester ${semesterIndex + 1}, Course ${courseIndex + 1}.`);
+            }
+            
+            // Accumulate GPA if valid
+            if (courseName && !isNaN(credit) && credit > 0 && gradePoint !== null) {
+              totalQualityPoints += credit * gradePoint;
+              totalCredits += credit;
+            }
+          });
+        });
+        
+        if (errorMessages.length > 0) {
+          alert(errorMessages.join('\n'));
+          return;
+        }
+        
+        if (totalCredits === 0) {
+          document.getElementById('gpaResult').textContent = `Please enter valid course information to calculate GPA.`;
+          return;
+        }
+        
+        const gpa = totalQualityPoints / totalCredits;
+        document.getElementById('gpaResult').textContent = `Your GPA: ${gpa.toFixed(2)}`;
+      }
+    </script>
+  </body>
 </html>
