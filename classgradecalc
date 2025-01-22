@@ -4,35 +4,118 @@
 <meta charset="UTF-8" />
 <title>Class Grade Calculator</title>
 <style>
-  body { font-family: 'Roboto', sans-serif; background: #f0f4f8; padding: 20px; color: #333; }
-  .section { max-width: 600px; margin: auto; background: #fff; padding: 20px; 
-             border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-  h2 { text-align: center; }
-  input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
-  button { background: #28a745; color: white; border: none; cursor: pointer; }
-  button:hover { background: #1e7e34; }
-  .row, .assignmentRow { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-  .row select, .row input, .assignmentRow select, .assignmentRow input { flex: 1; }
-  .customInput { display: none; }
-  .removeBtn { background: #dc3545; padding: 5px 10px; color: white; border: none; border-radius: 4px; cursor: pointer; }
-  .removeBtn:hover { background: #c82333; }
-  .smallBtn { width: auto; padding: 5px 10px; font-size: 0.9em; }
-  .backBtn { background: #4aa0be; color: white; }
-  .backBtn:hover { background: #3d8fae; }
+  body { 
+    font-family: 'Roboto', sans-serif; 
+    background: #f0f4f8; 
+    padding: 20px; 
+    color: #333; 
+  }
+  .section { 
+    max-width: 600px; 
+    margin: auto; 
+    background: #fff; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+    margin-bottom: 20px; 
+  }
+  h2 { 
+    text-align: center; 
+  }
+  input, select, button { 
+    width: 100%; 
+    padding: 10px; 
+    margin: 10px 0; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box;
+  }
+  button { 
+    background: #4aa0be; /* Changed to blue */
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    transition: background 0.3s;
+  }
+  button:hover { 
+    background: #3d8fae; /* Darker blue on hover */
+  }
+  .row, .assignmentRow { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+    margin-bottom: 10px; 
+  }
+  .row select, .row input, .assignmentRow select, .assignmentRow input { 
+    flex: 1; 
+  }
+  .customInput { 
+    display: none; 
+    flex: 1; 
+  }
+  .removeBtn { 
+    background: #dc3545; 
+    padding: 5px 10px; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    flex: 0 0 auto;
+  }
+  .removeBtn:hover { 
+    background: #c82333; 
+  }
+  .smallBtn { 
+    width: auto; 
+    padding: 5px 10px; 
+    font-size: 0.9em; 
+    background: #4aa0be; /* Blue for small buttons */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .smallBtn:hover { 
+    background: #3d8fae; 
+  }
+  .backBtn { 
+    background: #4aa0be; 
+    color: white; 
+  }
+  .backBtn:hover { 
+    background: #3d8fae; 
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  .instructions {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 10px;
+  }
 </style>
 </head>
 <body>
 
 <div id="categoriesSection" class="section">
   <h2>Set Grade Categories (Optional)</h2>
+  <p class="instructions">Add or edit grade categories and assign weights to each. Ensure the total weight sums to 100%.</p>
   <div id="categoriesContainer"></div>
   <button onclick="addCategoryRow()" class="smallBtn">Add Category</button>
   <button onclick="finalizeCategories()">Start Adding Grades</button>
-  <p>Ensure total weight sums to 100% if setting multiple categories.</p>
 </div>
 
 <div id="assignmentsSection" class="section" style="display:none;">
   <h2>Add Assignments</h2>
+  <p class="instructions">Add assignments with grades and assign them to the appropriate category.</p>
   <div id="assignmentsContainer"></div>
   <button onclick="addAssignmentRow()" class="smallBtn">Add Assignment</button>
   <button onclick="calculateGrade()">Calculate Grade</button>
@@ -44,7 +127,8 @@
 let categories = [];
 let assignments = [];
 
-function addCategoryRow() {
+// Function to add a category row with optional pre-filled examples
+function addCategoryRow(example = false) {
   let container = document.getElementById('categoriesContainer');
   let row = document.createElement('div');
   row.className = 'row';
@@ -64,6 +148,19 @@ function addCategoryRow() {
   `;
   container.appendChild(row);
 
+  // If example is true, pre-fill the row with sample data
+  if(example) {
+    let select = row.querySelector('.catSelect');
+    let customInput = row.querySelector('.customInput');
+    let weightInput = row.querySelector('.catWeight');
+    select.value = example.name === "Custom" ? "Custom" : example.name;
+    if(select.value === "Custom") {
+      customInput.value = example.name;
+      customInput.style.display = 'block';
+    }
+    weightInput.value = example.weight;
+  }
+
   // Attach event listener for custom input toggle
   let select = row.querySelector('.catSelect');
   select.addEventListener('change', function() {
@@ -72,14 +169,64 @@ function addCategoryRow() {
       customInput.style.display = 'block';
     } else {
       customInput.style.display = 'none';
+      customInput.value = '';
     }
   });
 }
 
-// Initialize with three blank category rows
-for(let i = 0; i < 3; i++) {
-  addCategoryRow();
+// Function to add an assignment row with optional pre-filled examples
+function addAssignmentRow(example = false) {
+  let container = document.getElementById('assignmentsContainer');
+  let row = document.createElement('div');
+  row.className = 'assignmentRow';
+
+  // Generate options based on current categories
+  let options = categories.map(cat => `<option value="${cat.name}">${cat.name} (${cat.weight}%)</option>`).join('');
+  if(options === '') {
+    options = '<option value="">No Categories Available</option>';
+  }
+
+  row.innerHTML = `
+    <input type="number" placeholder="Grade (%)" class="assignGrade" />
+    <select class="assignCat">
+      ${options}
+    </select>
+    <button class="removeBtn smallBtn" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  container.appendChild(row);
+
+  // If example is true, pre-fill the row with sample data
+  if(example) {
+    let gradeInput = row.querySelector('.assignGrade');
+    let catSelect = row.querySelector('.assignCat');
+    gradeInput.value = example.grade;
+    catSelect.value = example.category;
+  }
 }
+
+// Function to pre-populate categories with examples
+function prePopulateCategories() {
+  const exampleCategories = [
+    { name: "Tests/Exams", weight: 50 },
+    { name: "Homework", weight: 30 },
+    { name: "Projects", weight: 20 }
+  ];
+  exampleCategories.forEach(cat => addCategoryRow(cat));
+}
+
+// Function to pre-populate assignments with examples
+function prePopulateAssignments() {
+  const exampleAssignments = [
+    { grade: 85, category: "Tests/Exams" },
+    { grade: 90, category: "Homework" },
+    { grade: 95, category: "Projects" }
+  ];
+  exampleAssignments.forEach(assign => addAssignmentRow(assign));
+}
+
+// Initialize with example categories and assignments
+prePopulateCategories();
+prePopulateAssignments();
 
 function finalizeCategories() {
   let rows = document.querySelectorAll('#categoriesContainer .row');
@@ -114,6 +261,9 @@ function finalizeCategories() {
     return;
   }
 
+  // Update assignment category options
+  updateAssignmentCategories();
+
   document.getElementById('categoriesSection').style.display = 'none';
   document.getElementById('assignmentsSection').style.display = 'block';
 }
@@ -124,28 +274,25 @@ function goBackEditCategories() {
   document.getElementById('categoriesSection').style.display = 'block';
 }
 
-function addAssignmentRow() {
-  let container = document.getElementById('assignmentsContainer');
-  let row = document.createElement('div');
-  row.className = 'assignmentRow';
-  
-  let options = categories.map(cat => `<option value="${cat.name}">${cat.name} (${cat.weight}%)</option>`).join('');
-  
-  row.innerHTML = `
-    <input type="number" placeholder="Grade (%)" class="assignGrade" />
-    <select class="assignCat">
-      ${options}
-    </select>
-    <button class="removeBtn smallBtn" onclick="this.parentElement.remove()">Remove</button>
-  `;
-  container.appendChild(row);
+function updateAssignmentCategories() {
+  let catSelects = document.querySelectorAll('.assignCat');
+  catSelects.forEach(select => {
+    let selectedValue = select.value;
+    select.innerHTML = categories.map(cat => `<option value="${cat.name}">${cat.name} (${cat.weight}%)</option>`).join('');
+    // Re-select previous value if possible
+    if(categories.some(cat => cat.name === selectedValue)) {
+      select.value = selectedValue;
+    } else {
+      select.value = '';
+    }
+  });
 }
 
 function calculateGrade() {
   let gradeInputs = document.querySelectorAll('.assignGrade');
   let catSelects = document.querySelectorAll('.assignCat');
   assignments = [];
-  
+
   for (let i = 0; i < gradeInputs.length; i++) {
     let grade = parseFloat(gradeInputs[i].value);
     let category = catSelects[i].value;
@@ -153,21 +300,21 @@ function calculateGrade() {
       assignments.push({ grade, category });
     }
   }
-  
+
   let categoryTotals = {};
   let categoryCounts = {};
   for (let cat of categories) {
     categoryTotals[cat.name] = 0;
     categoryCounts[cat.name] = 0;
   }
-  
+
   for (let assign of assignments) {
     if (categoryTotals.hasOwnProperty(assign.category)) {
       categoryTotals[assign.category] += assign.grade;
       categoryCounts[assign.category] += 1;
     }
   }
-  
+
   let finalGrade = 0;
   for (let cat of categories) {
     if (categoryCounts[cat.name] > 0) {
@@ -175,7 +322,7 @@ function calculateGrade() {
       finalGrade += avg * (cat.weight / 100);
     }
   }
-  
+
   document.getElementById('result').textContent = `Calculated Grade: ${finalGrade.toFixed(2)}%`;
 }
 </script>
