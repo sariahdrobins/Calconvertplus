@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enhanced Car Loan Calculator</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+      background: #eef2f5;
+      color: #333;
+    }
+    .calculator {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ccc;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      transition: background 0.3s;
+    }
+    .tab.active {
+      background: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+    }
+    .tab-content {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 0 8px 8px 8px;
+      background: #fff;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <h2 style="text-align: center; margin-bottom: 20px;">Enhanced Car Loan Calculator</h2>
+  
+  <div class="tabs">
+    <div class="tab active" id="totalPriceTab">Total Price</div>
+    <div class="tab" id="monthlyPaymentTab">Monthly Payment</div>
+  </div>
+  
+  <!-- Total Price Tab Content -->
+  <div class="tab-content" id="totalPriceContent">
+    <label for="autoPrice">Auto Price:</label>
+    <input type="number" id="autoPrice" placeholder="Enter auto price" min="0" />
+    
+    <label for="loanTermTotal">Loan Term (months):</label>
+    <input type="number" id="loanTermTotal" placeholder="Enter loan term in months" min="1" />
+    
+    <label for="interestRateTotal">Interest Rate (%):</label>
+    <input type="number" id="interestRateTotal" placeholder="Enter annual interest rate" step="0.01" min="0" />
+    
+    <label for="cashIncentivesTotal">Cash Incentives:</label>
+    <input type="number" id="cashIncentivesTotal" placeholder="Enter cash incentives" min="0" />
+    
+    <label for="downPaymentTotal">Down Payment:</label>
+    <input type="number" id="downPaymentTotal" placeholder="Enter down payment" min="0" />
+    
+    <label for="tradeInTotal">Trade-in Value:</label>
+    <input type="number" id="tradeInTotal" placeholder="Enter trade-in value" min="0" />
+    
+    <label for="amountOwedTradeInTotal">Amount Owed on Trade-in:</label>
+    <input type="number" id="amountOwedTradeInTotal" placeholder="Enter amount owed on trade-in" min="0" />
+    
+    <label for="stateTotal">Your State:</label>
+    <select id="stateTotal">
+      <option value="">Select State</option>
+      <!-- All U.S. States -->
+      <option value="AL">Alabama</option>
+      <option value="AK">Alaska</option>
+      <option value="AZ">Arizona</option>
+      <option value="AR">Arkansas</option>
+      <option value="CA">California</option>
+      <option value="CO">Colorado</option>
+      <option value="CT">Connecticut</option>
+      <option value="DE">Delaware</option>
+      <option value="FL">Florida</option>
+      <option value="GA">Georgia</option>
+      <option value="HI">Hawaii</option>
+      <option value="ID">Idaho</option>
+      <option value="IL">Illinois</option>
+      <option value="IN">Indiana</option>
+      <option value="IA">Iowa</option>
+      <option value="KS">Kansas</option>
+      <option value="KY">Kentucky</option>
+      <option value="LA">Louisiana</option>
+      <option value="ME">Maine</option>
+      <option value="MD">Maryland</option>
+      <option value="MA">Massachusetts</option>
+      <option value="MI">Michigan</option>
+      <option value="MN">Minnesota</option>
+      <option value="MS">Mississippi</option>
+      <option value="MO">Missouri</option>
+      <option value="MT">Montana</option>
+      <option value="NE">Nebraska</option>
+      <option value="NV">Nevada</option>
+      <option value="NH">New Hampshire</option>
+      <option value="NJ">New Jersey</option>
+      <option value="NM">New Mexico</option>
+      <option value="NY">New York</option>
+      <option value="NC">North Carolina</option>
+      <option value="ND">North Dakota</option>
+      <option value="OH">Ohio</option>
+      <option value="OK">Oklahoma</option>
+      <option value="OR">Oregon</option>
+      <option value="PA">Pennsylvania</option>
+      <option value="RI">Rhode Island</option>
+      <option value="SC">South Carolina</option>
+      <option value="SD">South Dakota</option>
+      <option value="TN">Tennessee</option>
+      <option value="TX">Texas</option>
+      <option value="UT">Utah</option>
+      <option value="VT">Vermont</option>
+      <option value="VA">Virginia</option>
+      <option value="WA">Washington</option>
+      <option value="WV">West Virginia</option>
+      <option value="WI">Wisconsin</option>
+      <option value="WY">Wyoming</option>
+    </select>
+    
+    <label for="salesTaxTotal">Sales Tax (%):</label>
+    <input type="number" id="salesTaxTotal" placeholder="Sales tax will auto-populate" readonly />
+    
+    <label for="feesTotal">Title, Registration, and Other Fees:</label>
+    <input type="number" id="feesTotal" placeholder="Enter total fees" min="0" />
+    
+    <label>
+      <input type="checkbox" id="includeFeesTotal" />
+      Include all fees in loan
+    </label>
+    
+    <button onclick="calculateTotalPrice()">Calculate Total Price</button>
+    <div class="result" id="totalPriceResult"></div>
+  </div>
+  
+  <!-- Monthly Payment Tab Content -->
+  <div class="tab-content hidden" id="monthlyPaymentContent">
+    <label for="monthlyPayment">Monthly Payment:</label>
+    <input type="number" id="monthlyPayment" placeholder="Enter monthly payment" min="0" />
+    
+    <label for="loanTermMonthly">Loan Term (months):</label>
+    <input type="number" id="loanTermMonthly" placeholder="Enter loan term in months" min="1" />
+    
+    <label for="interestRateMonthly">Interest Rate (%):</label>
+    <input type="number" id="interestRateMonthly" placeholder="Enter annual interest rate" step="0.01" min="0" />
+    
+    <label for="cashIncentivesMonthly">Cash Incentives:</label>
+    <input type="number" id="cashIncentivesMonthly" placeholder="Enter cash incentives" min="0" />
+    
+    <label for="downPaymentMonthly">Down Payment:</label>
+    <input type="number" id="downPaymentMonthly" placeholder="Enter down payment" min="0" />
+    
+    <label for="tradeInMonthly">Trade-in Value:</label>
+    <input type="number" id="tradeInMonthly" placeholder="Enter trade-in value" min="0" />
+    
+    <label for="amountOwedTradeInMonthly">Amount Owed on Trade-in:</label>
+    <input type="number" id="amountOwedTradeInMonthly" placeholder="Enter amount owed on trade-in" min="0" />
+    
+    <label for="stateMonthly">Your State:</label>
+    <select id="stateMonthly">
+      <option value="">Select State</option>
+      <!-- All U.S. States -->
+      <option value="AL">Alabama</option>
+      <option value="AK">Alaska</option>
+      <option value="AZ">Arizona</option>
+      <option value="AR">Arkansas</option>
+      <option value="CA">California</option>
+      <option value="CO">Colorado</option>
+      <option value="CT">Connecticut</option>
+      <option value="DE">Delaware</option>
+      <option value="FL">Florida</option>
+      <option value="GA">Georgia</option>
+      <option value="HI">Hawaii</option>
+      <option value="ID">Idaho</option>
+      <option value="IL">Illinois</option>
+      <option value="IN">Indiana</option>
+      <option value="IA">Iowa</option>
+      <option value="KS">Kansas</option>
+      <option value="KY">Kentucky</option>
+      <option value="LA">Louisiana</option>
+      <option value="ME">Maine</option>
+      <option value="MD">Maryland</option>
+      <option value="MA">Massachusetts</option>
+      <option value="MI">Michigan</option>
+      <option value="MN">Minnesota</option>
+      <option value="MS">Mississippi</option>
+      <option value="MO">Missouri</option>
+      <option value="MT">Montana</option>
+      <option value="NE">Nebraska</option>
+      <option value="NV">Nevada</option>
+      <option value="NH">New Hampshire</option>
+      <option value="NJ">New Jersey</option>
+      <option value="NM">New Mexico</option>
+      <option value="NY">New York</option>
+      <option value="NC">North Carolina</option>
+      <option value="ND">North Dakota</option>
+      <option value="OH">Ohio</option>
+      <option value="OK">Oklahoma</option>
+      <option value="OR">Oregon</option>
+      <option value="PA">Pennsylvania</option>
+      <option value="RI">Rhode Island</option>
+      <option value="SC">South Carolina</option>
+      <option value="SD">South Dakota</option>
+      <option value="TN">Tennessee</option>
+      <option value="TX">Texas</option>
+      <option value="UT">Utah</option>
+      <option value="VT">Vermont</option>
+      <option value="VA">Virginia</option>
+      <option value="WA">Washington</option>
+      <option value="WV">West Virginia</option>
+      <option value="WI">Wisconsin</option>
+      <option value="WY">Wyoming</option>
+    </select>
+    
+    <label for="salesTaxMonthly">Sales Tax (%):</label>
+    <input type="number" id="salesTaxMonthly" placeholder="Sales tax will auto-populate" readonly />
+    
+    <label for="feesMonthly">Title, Registration, and Other Fees:</label>
+    <input type="number" id="feesMonthly" placeholder="Enter total fees" min="0" />
+    
+    <label>
+      <input type="checkbox" id="includeFeesMonthly" />
+      Include all fees in loan
+    </label>
+    
+    <button onclick="calculateMonthlyPayment()">Calculate Monthly Payment</button>
+    <div class="result" id="monthlyPaymentResult"></div>
+  </div>
+  
+</div>
+
+<script>
+  // Sales Tax Data for all U.S. States
+  const salesTaxRates = {
+    "AL": 4.00,
+    "AK": 0.00,
+    "AZ": 5.60,
+    "AR": 6.50,
+    "CA": 7.25,
+    "CO": 2.90,
+    "CT": 6.35,
+    "DE": 0.00,
+    "FL": 6.00,
+    "GA": 4.00,
+    "HI": 4.00,
+    "ID": 6.00,
+    "IL": 6.25,
+    "IN": 7.00,
+    "IA": 6.00,
+    "KS": 6.50,
+    "KY": 6.00,
+    "LA": 4.45,
+    "ME": 5.50,
+    "MD": 6.00,
+    "MA": 6.25,
+    "MI": 6.00,
+    "MN": 6.875,
+    "MS": 7.00,
+    "MO": 4.225,
+    "MT": 0.00,
+    "NE": 5.50,
+    "NV": 6.85,
+    "NH": 0.00,
+    "NJ": 6.625,
+    "NM": 5.125,
+    "NY": 4.00,
+    "NC": 4.75,
+    "ND": 5.00,
+    "OH": 5.75,
+    "OK": 4.50,
+    "OR": 0.00,
+    "PA": 6.00,
+    "RI": 7.00,
+    "SC": 6.00,
+    "SD": 4.50,
+    "TN": 7.00,
+    "TX": 6.25,
+    "UT": 4.85,
+    "VT": 6.00,
+    "VA": 4.30,
+    "WA": 6.50,
+    "WV": 6.00,
+    "WI": 5.00,
+    "WY": 4.00
+  };
+
+  // Function to populate sales tax based on state selection
+  function populateSalesTax(stateSelectId, salesTaxId) {
+    const stateSelect = document.getElementById(stateSelectId);
+    const salesTaxInput = document.getElementById(salesTaxId);
+    stateSelect.addEventListener('change', function() {
+      const selectedState = this.value;
+      const taxRate = salesTaxRates[selectedState] || 0;
+      salesTaxInput.value = taxRate.toFixed(2);
+    });
+  }
+
+  // Initialize sales tax population for both tabs
+  populateSalesTax('stateTotal', 'salesTaxTotal');
+  populateSalesTax('stateMonthly', 'salesTaxMonthly');
+
+  // Tab Switching Functionality
+  const totalPriceTab = document.getElementById('totalPriceTab');
+  const monthlyPaymentTab = document.getElementById('monthlyPaymentTab');
+  const totalPriceContent = document.getElementById('totalPriceContent');
+  const monthlyPaymentContent = document.getElementById('monthlyPaymentContent');
+
+  totalPriceTab.addEventListener('click', function() {
+    totalPriceTab.classList.add('active');
+    monthlyPaymentTab.classList.remove('active');
+    totalPriceContent.classList.remove('hidden');
+    monthlyPaymentContent.classList.add('hidden');
+  });
+
+  monthlyPaymentTab.addEventListener('click', function() {
+    monthlyPaymentTab.classList.add('active');
+    totalPriceTab.classList.remove('active');
+    monthlyPaymentContent.classList.remove('hidden');
+    totalPriceContent.classList.add('hidden');
+  });
+
+  // Function to calculate Total Price
+  function calculateTotalPrice() {
+    const autoPrice = parseFloat(document.getElementById('autoPrice').value) || 0;
+    const loanTerm = parseInt(document.getElementById('loanTermTotal').value) || 0;
+    const interestRate = parseFloat(document.getElementById('interestRateTotal').value) || 0;
+    const cashIncentives = parseFloat(document.getElementById('cashIncentivesTotal').value) || 0;
+    const downPayment = parseFloat(document.getElementById('downPaymentTotal').value) || 0;
+    const tradeInValue = parseFloat(document.getElementById('tradeInTotal').value) || 0;
+    const amountOwedTradeIn = parseFloat(document.getElementById('amountOwedTradeInTotal').value) || 0;
+    const salesTax = parseFloat(document.getElementById('salesTaxTotal').value) || 0;
+    const includeFees = document.getElementById('includeFeesTotal').checked;
+    const fees = parseFloat(document.getElementById('feesTotal').value) || 0;
+
+    // Calculate total price
+    const taxableAmount = autoPrice - cashIncentives;
+    const taxAmount = taxableAmount * (salesTax / 100);
+    const totalFees = includeFees ? fees : 0;
+    const totalPrice = taxableAmount + taxAmount + totalFees - downPayment - tradeInValue + amountOwedTradeIn;
+
+    // Calculate monthly payment based on totalPrice
+    const monthlyRate = (interestRate / 100) / 12;
+    const numberOfPayments = loanTerm;
+    let monthlyPayment = 0;
+
+    if (monthlyRate > 0 && numberOfPayments > 0) {
+      monthlyPayment = (totalPrice * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+                       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    } else if (numberOfPayments > 0) {
+      monthlyPayment = totalPrice / numberOfPayments;
+    }
+
+    document.getElementById('totalPriceResult').innerHTML = `
+      <p>Total Price to be Financed: <strong>$${totalPrice.toFixed(2)}</strong></p>
+      <p>Estimated Monthly Payment: <strong>$${monthlyPayment.toFixed(2)}</strong></p>
+    `;
+  }
+
+  // Function to calculate Monthly Payment
+  function calculateMonthlyPayment() {
+    const monthlyPaymentInput = parseFloat(document.getElementById('monthlyPayment').value) || 0;
+    const loanTerm = parseInt(document.getElementById('loanTermMonthly').value) || 0;
+    const interestRate = parseFloat(document.getElementById('interestRateMonthly').value) || 0;
+    const cashIncentives = parseFloat(document.getElementById('cashIncentivesMonthly').value) || 0;
+    const downPayment = parseFloat(document.getElementById('downPaymentMonthly').value) || 0;
+    const tradeInValue = parseFloat(document.getElementById('tradeInMonthly').value) || 0;
+    const amountOwedTradeIn = parseFloat(document.getElementById('amountOwedTradeInMonthly').value) || 0;
+    const salesTax = parseFloat(document.getElementById('salesTaxMonthly').value) || 0;
+    const includeFees = document.getElementById('includeFeesMonthly').checked;
+    const fees = parseFloat(document.getElementById('feesMonthly').value) || 0;
+
+    // Calculate total fees and incentives
+    const totalIncentives = cashIncentives + downPayment + tradeInValue - amountOwedTradeIn;
+
+    // Calculate the principal using the loan formula:
+    // P = EMI * [1 - (1 + r)^-n] / r
+    const monthlyRate = (interestRate / 100) / 12;
+    let principal = 0;
+
+    if (monthlyRate > 0 && loanTerm > 0) {
+      principal = monthlyPaymentInput * (1 - Math.pow(1 + monthlyRate, -loanTerm)) / monthlyRate;
+    } else if (loanTerm > 0) {
+      principal = monthlyPaymentInput * loanTerm;
+    }
+
+    // Calculate taxable amount and total price
+    const taxableAmount = principal - fees;
+    const autoPrice = (taxableAmount / (1 + (salesTax / 100))) + cashIncentives;
+    const taxAmount = autoPrice * (salesTax / 100);
+    const totalFees = includeFees ? fees : 0;
+    const totalPrice = autoPrice + taxAmount + totalFees - downPayment - tradeInValue + amountOwedTradeIn;
+
+    document.getElementById('monthlyPaymentResult').innerHTML = `
+      <p>Principal Amount: <strong>$${principal.toFixed(2)}</strong></p>
+      <p>Estimated Auto Price: <strong>$${autoPrice.toFixed(2)}</strong></p>
+      <p>Sales Tax Amount: <strong>$${taxAmount.toFixed(2)}</strong></p>
+      <p>Total Price to be Financed: <strong>$${totalPrice.toFixed(2)}</strong></p>
+    `;
+  }
+</script>
+
+</body>
+</html>
