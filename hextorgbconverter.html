@@ -2,42 +2,310 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Hex to RGB Converter</title>
+<title>Advanced Color Converter</title>
 <style>
-  body { font-family: 'Roboto', sans-serif; background: #f0f4f8; padding: 20px; color: #333; }
-  .converter { max-width: 350px; margin: auto; background: #fff; padding: 20px; 
-               border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; }
-  input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
-  button { background: #007BFF; color: white; border: none; cursor: pointer; }
-  button:hover { background: #0056b3; }
-  .result { font-weight: bold; margin-top: 15px; }
+  body { 
+    font-family: 'Roboto', sans-serif; 
+    background: #f0f4f8; 
+    padding: 20px; 
+    color: #333; 
+  }
+  .converter { 
+    max-width: 600px; 
+    margin: auto; 
+    background: #fff; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+  }
+  /* Tab Styles */
+  .tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    margin-right: 2px;
+  }
+  .tab:last-child {
+    margin-right: 0;
+  }
+  .tab.active {
+    background: #fff;
+    font-weight: bold;
+    border-bottom: 1px solid #fff;
+  }
+  /* Tab Content */
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  /* Common Styles */
+  label { 
+    display: block; 
+    margin: 10px 0 5px; 
+    font-weight: bold; 
+    text-align: left;
+  }
+  input[type="text"], input[type="color"], button { 
+    width: 100%; 
+    padding: 10px; 
+    margin: 5px 0 15px; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box;
+  }
+  .result-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .result-group input {
+    flex: 1;
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  button { 
+    background: #007BFF; 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    margin-bottom: 10px;
+  }
+  button:hover { 
+    background: #0056b3; 
+  }
+  .result p {
+    margin: 5px 0;
+  }
+  /* Color Preview Box */
+  .color-preview {
+    width: 100%;
+    height: 100px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+    background: #ffffff;
+  }
 </style>
 </head>
 <body>
 <div class="converter">
-  <h2>Hex to RGB Converter</h2>
-  <input type="text" id="hexInput" placeholder="#ffffff or ffffff" maxlength="7" />
-  <button onclick="convertHexToRGB()">Convert</button>
-  <div class="result" id="rgbResult"></div>
+  <h2>Advanced Color Converter</h2>
+  
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="openTab('hexToRgb')">Hex to RGB</div>
+    <div class="tab" onclick="openTab('rgbToHex')">RGB to Hex</div>
+  </div>
+  
+  <!-- Hex to RGB Tab Content -->
+  <div class="tab-content active" id="hexToRgb">
+    <!-- Color Picker -->
+    <label for="hexColorPicker">Choose a Color:</label>
+    <input type="color" id="hexColorPicker" value="#ffffff" />
+    
+    <!-- Hex Input -->
+    <label for="hexInput">Hex Color Code:</label>
+    <input type="text" id="hexInput" placeholder="#ffffff or ffffff" maxlength="7" />
+    <button onclick="convertHexToRGB()">Convert to RGB</button>
+    
+    <!-- Results -->
+    <label>RGB (0-255):</label>
+    <div class="result-group">
+      <input type="text" id="r255Result" placeholder="Red (0-255)" readonly />
+      <input type="text" id="g255Result" placeholder="Green (0-255)" readonly />
+      <input type="text" id="b255Result" placeholder="Blue (0-255)" readonly />
+    </div>
+    
+    <label>RGB (0-1):</label>
+    <div class="result-group">
+      <input type="text" id="r01Result" placeholder="Red (0-1)" readonly />
+      <input type="text" id="g01Result" placeholder="Green (0-1)" readonly />
+      <input type="text" id="b01Result" placeholder="Blue (0-1)" readonly />
+    </div>
+    
+    <label>CSS Color (0-255):</label>
+    <div class="result-group">
+      <input type="text" id="css255Result" placeholder="rgb(R, G, B)" readonly />
+    </div>
+    
+    <label>CSS Color (0%-100%):</label>
+    <div class="result-group">
+      <input type="text" id="cssPercentResult" placeholder="rgb(R%, G%, B%)" readonly />
+    </div>
+  </div>
+  
+  <!-- RGB to Hex Tab Content -->
+  <div class="tab-content" id="rgbToHex">
+    <!-- Color Picker -->
+    <label for="rgbColorPicker">Choose a Color:</label>
+    <input type="color" id="rgbColorPicker" value="#ffffff" />
+    
+    <!-- RGB Inputs -->
+    <label for="redInput">Red:</label>
+    <input type="text" id="redInput" placeholder="0-255" maxlength="3" />
+    
+    <label for="greenInput">Green:</label>
+    <input type="text" id="greenInput" placeholder="0-255" maxlength="3" />
+    
+    <label for="blueInput">Blue:</label>
+    <input type="text" id="blueInput" placeholder="0-255" maxlength="3" />
+    
+    <button onclick="convertRGBToHex()">Convert to Hex</button>
+    <div class="result">
+      <p id="hexResult">Hex: #FFFFFF</p>
+    </div>
+  </div>
+  
+  <!-- Color Preview Box -->
+  <div class="color-preview" id="colorPreview"></div>
 </div>
 
 <script>
-function convertHexToRGB() {
-  let hex = document.getElementById('hexInput').value.trim();
-  if(hex.startsWith('#')) { hex = hex.slice(1); }
-  if(hex.length !== 3 && hex.length !== 6) {
-    alert('Please enter a valid hex code.');
-    return;
+  // Function to handle tab switching
+  function openTab(tabName) {
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Hide all tab contents
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => content.classList.remove('active'));
+    
+    // Add active class to the selected tab and show its content
+    document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+    document.getElementById(tabName).classList.add('active');
   }
-  if(hex.length === 3) { 
-    hex = hex.split('').map(char => char + char).join(''); 
+
+  // Utility function to clamp values
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
   }
-  const bigint = parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  document.getElementById('rgbResult').textContent = `RGB: (${r}, ${g}, ${b})`;
-}
+
+  // Convert Hex to RGB and update all result fields
+  function convertHexToRGB() {
+    let hex = document.getElementById('hexInput').value.trim();
+    if(hex.startsWith('#')) { hex = hex.slice(1); }
+    if(hex.length !== 3 && hex.length !== 6) {
+      alert('Please enter a valid hex code (3 or 6 characters).');
+      return;
+    }
+    if(hex.length === 3) { 
+      hex = hex.split('').map(char => char + char).join(''); 
+    }
+    const bigint = parseInt(hex, 16);
+    if (isNaN(bigint)) {
+      alert('Invalid hex code.');
+      return;
+    }
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    
+    // Update RGB (0-255) result fields
+    document.getElementById('r255Result').value = r;
+    document.getElementById('g255Result').value = g;
+    document.getElementById('b255Result').value = b;
+    
+    // Update RGB (0-1) result fields
+    document.getElementById('r01Result').value = (r / 255).toFixed(3);
+    document.getElementById('g01Result').value = (g / 255).toFixed(3);
+    document.getElementById('b01Result').value = (b / 255).toFixed(3);
+    
+    // Update CSS Color (0-255) result field
+    document.getElementById('css255Result').value = `rgb(${r}, ${g}, ${b})`;
+    
+    // Update CSS Color (0%-100%) result field
+    document.getElementById('cssPercentResult').value = `rgb(${((r / 255) * 100).toFixed(1)}%, ${((g / 255) * 100).toFixed(1)}%, ${((b / 255) * 100).toFixed(1)}%)`;
+    
+    // Update Hex Color Picker
+    document.getElementById('hexColorPicker').value = `#${hex}`;
+    
+    // Update Color Preview Box
+    updateColorPreview(r, g, b);
+  }
+
+  // Convert RGB to Hex and update the Hex result field
+  function convertRGBToHex() {
+    let r = document.getElementById('redInput').value.trim();
+    let g = document.getElementById('greenInput').value.trim();
+    let b = document.getElementById('blueInput').value.trim();
+    
+    // Validate inputs
+    [r, g, b] = [r, g, b].map(val => parseInt(val, 10));
+    if ([r, g, b].some(val => isNaN(val) || val < 0 || val > 255)) {
+      alert('Please enter valid RGB values between 0 and 255.');
+      return;
+    }
+    
+    const hex = '#' + [r, g, b].map(val => {
+      const hexPart = val.toString(16);
+      return hexPart.length === 1 ? '0' + hexPart : hexPart;
+    }).join('').toUpperCase();
+    
+    document.getElementById('hexResult').textContent = `Hex: ${hex}`;
+    
+    // Update RGB to Hex Color Picker
+    document.getElementById('rgbColorPicker').value = hex.toLowerCase();
+    
+    // Update Color Preview Box
+    updateColorPreview(r, g, b);
+  }
+
+  // Update Hex to RGB fields when Hex Color Picker changes
+  document.getElementById('hexColorPicker').addEventListener('input', function() {
+    const hex = this.value;
+    document.getElementById('hexInput').value = hex;
+    convertHexToRGB();
+  });
+
+  // Update RGB to Hex fields when RGB Color Picker changes
+  document.getElementById('rgbColorPicker').addEventListener('input', function() {
+    const hex = this.value;
+    // Convert hex to RGB
+    let hexValue = hex.slice(1);
+    if(hexValue.length === 3) { 
+      hexValue = hexValue.split('').map(char => char + char).join(''); 
+    }
+    const bigint = parseInt(hexValue, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    // Update RGB input fields
+    document.getElementById('redInput').value = r;
+    document.getElementById('greenInput').value = g;
+    document.getElementById('blueInput').value = b;
+    // Update Hex result
+    document.getElementById('hexResult').textContent = `Hex: ${hex.toUpperCase()}`;
+    
+    // Update Color Preview Box
+    updateColorPreview(r, g, b);
+  });
+
+  // Function to update the Color Preview Box
+  function updateColorPreview(r, g, b) {
+    const preview = document.getElementById('colorPreview');
+    preview.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+  }
+
+  // Initial conversion on page load
+  window.onload = function() {
+    convertHexToRGB();
+  };
 </script>
 </body>
 </html>
+
