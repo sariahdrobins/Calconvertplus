@@ -1,110 +1,581 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Paycheck Calculator</title>
-<style>
-  body { font-family: 'Roboto', sans-serif; padding: 20px; background: #eef2f5; color: #333; }
-  .calculator { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  label, input, select, button { display: block; width: 100%; margin-bottom: 15px; }
-  button { background: #6c757d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
-  button:hover { background: #5a6268; }
-  .result { font-weight: bold; margin-top: 15px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Advanced Paycheck Calculator</title>
+  <style>
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      padding: 20px; 
+      background: #eef2f5; 
+      color: #333; 
+    }
+    .calculator { 
+      max-width: 800px; 
+      margin: auto; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+    }
+    h2 { text-align: center; margin-bottom: 20px; }
+    label, input, select, button { 
+      display: block; 
+      width: 100%; 
+      margin-bottom: 15px; 
+    }
+    button { 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      padding: 10px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+    }
+    button:hover { 
+      background: #0056b3; 
+    }
+    .result-section {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f9f9f9;
+    }
+    .result-section h3 {
+      margin-bottom: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 1.1em;
+    }
+    .result-item span {
+      font-weight: bold;
+    }
+    /* Tabs Styling */
+    .tabs {
+      margin-bottom: 20px;
+    }
+    .tab-buttons {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px 15px;
+      background: #f1f1f1;
+      color: #333;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      font-weight: bold;
+      font-size: 1em;
+    }
+    .tab-buttons button.active {
+      background: #007bff;
+      color: #fff;
+    }
+    .tab-buttons button:not(:last-child) {
+      border-right: 1px solid #ddd;
+    }
+    .tab-buttons button:hover {
+      background: #ddd;
+    }
+    .tab-content {
+      display: none;
+      padding: 10px 0;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    /* Overtime Section */
+    .overtime-section {
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 4px;
+      background: #f1f1f1;
+    }
+    .overtime-section input, .overtime-section select {
+      width: calc(50% - 10px);
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .overtime-section button {
+      width: auto;
+      background: #dc3545;
+      color: white;
+    }
+    /* Federal Tax Fields */
+    .federal-fields label {
+      font-weight: bold;
+    }
+    .federal-fields .inline {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .federal-fields .inline label {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    .federal-fields .inline select, 
+    .federal-fields .inline input {
+      flex: 2;
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .federal-fields .inline {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .federal-fields .inline input,
+      .federal-fields .inline select {
+        width: 100%;
+        margin-right: 0;
+      }
+      .overtime-section input, 
+      .overtime-section select {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="calculator">
-  <h2>Paycheck Calculator</h2>
-  <label for="wage">Hourly Wage or Annual Salary:</label>
-  <input type="number" id="wage" placeholder="Enter wage/salary" />
+  <div class="calculator">
+    <h2>Advanced Paycheck Calculator</h2>
+    
+    <!-- Tabs at the Top -->
+    <div class="tabs">
+      <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'Pay')">Pay (Main)</button>
+        <button class="tab-button" onclick="openTab(event, 'Federal')">Federal Taxes</button>
+        <button class="tab-button" onclick="openTab(event, 'State')">State Taxes</button>
+        <button class="tab-button" onclick="openTab(event, 'Benefits')">Benefits</button>
+      </div>
+      
+      <!-- Pay (Main) Tab -->
+      <div id="Pay" class="tab-content active">
+        <!-- Pay Frequency -->
+        <label for="payFrequency">Pay Frequency:</label>
+        <select id="payFrequency">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Bi-Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="semimonthly">Semi-Monthly</option>
+        </select>
+        
+        <!-- Payment Type -->
+        <label for="paymentType">How are you paid?</label>
+        <select id="paymentType" onchange="togglePaymentFields()">
+          <option value="hourly">Hourly</option>
+          <option value="salary">Salary</option>
+        </select>
+        
+        <!-- Payment Details -->
+        <div id="paymentDetails">
+          <!-- For Hourly -->
+          <div id="hourlyFields">
+            <label for="wage">Hourly Wage ($):</label>
+            <input type="number" id="wage" placeholder="Enter hourly wage" />
+            
+            <label for="hours">Hours Worked (per pay period):</label>
+            <input type="number" id="hours" placeholder="Enter hours worked" />
+          </div>
+          
+          <!-- For Salary -->
+          <div id="salaryFields" style="display: none;">
+            <label for="salaryMethod">Gross Pay Method:</label>
+            <select id="salaryMethod">
+              <option value="annual">Per Year</option>
+              <option value="perPeriod">Per Pay Period</option>
+            </select>
+            
+            <label for="salaryAmount">Amount ($):</label>
+            <input type="number" id="salaryAmount" placeholder="Enter salary amount" />
+          </div>
+        </div>
+        
+        <!-- Overtime Section -->
+        <div>
+          <label>Overtime:</label>
+          <div id="overtimeContainer">
+            <!-- Overtime entries will be appended here -->
+          </div>
+          <button type="button" onclick="addOvertime()">Add Overtime</button>
+        </div>
+        
+        <!-- Other Deductions -->
+        <label for="deductions">Other Deductions ($):</label>
+        <input type="number" id="deductions" placeholder="Enter other deductions" />
+      </div>
+      
+      <!-- Federal Taxes Tab -->
+      <div id="Federal" class="tab-content">
+        <div class="federal-fields">
+          <div class="inline">
+            <label for="w4Version">Use 2019 or earlier version of Form W-4?</label>
+            <select id="w4Version">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          
+          <div class="inline">
+            <label for="nonresidentAlien">Are you a nonresident alien?</label>
+            <select id="nonresidentAlien">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          
+          <div class="inline">
+            <label for="filingStatus">What's your filing status?</label>
+            <select id="filingStatus">
+              <option value="Single">Single or Married filing separately</option>
+              <option value="Married">Married filing jointly</option>
+              <option value="Head">Head of Household</option>
+            </select>
+          </div>
+          
+          <div class="inline">
+            <label for="multipleJobs">Work more than one job or your spouse works?</label>
+            <select id="multipleJobs">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          
+          <label for="dependentAmount">Any dependent amount?</label>
+          <input type="number" id="dependentAmount" placeholder="Enter dependent amount" />
+          
+          <label for="otherIncome">Any other income amount?</label>
+          <input type="number" id="otherIncome" placeholder="Enter other income amount" />
+          
+          <label for="deductionAmount">Any deduction amount?</label>
+          <input type="number" id="deductionAmount" placeholder="Enter deduction amount" />
+          
+          <label for="additionalWithholding">Any additional withholding amount?</label>
+          <input type="number" id="additionalWithholding" placeholder="Enter additional withholding amount" />
+          
+          <div class="inline">
+            <label for="exemptFederal">Are you exempt from Federal Income Tax Withholding?</label>
+            <select id="exemptFederal">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          
+          <div class="inline">
+            <label for="exemptMedicare">Are you exempt from Medicare Tax?</label>
+            <select id="exemptMedicare">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          
+          <div class="inline">
+            <label for="exemptSocialSecurity">Are you exempt from Social Security Tax?</label>
+            <select id="exemptSocialSecurity">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- State Taxes Tab -->
+      <div id="State" class="tab-content">
+        <label for="stateSelect">Select Your State:</label>
+        <select id="stateSelect">
+          <option value="">--Select State--</option>
+          <option value="0.050">Alabama - 5.0%</option>
+          <option value="0.000">Alaska - 0.0%</option>
+          <option value="0.045">Arizona - 4.5%</option>
+          <option value="0.060">Arkansas - 6.0%</option>
+          <option value="0.093">California - 9.3%</option>
+          <option value="0.0455">Colorado - 4.55%</option>
+          <option value="0.050">Connecticut - 5.0%</option>
+          <option value="0.066">Delaware - 6.6%</option>
+          <option value="0.000">Florida - 0.0%</option>
+          <option value="0.060">Georgia - 6.0%</option>
+          <option value="0.072">Hawaii - 7.2%</option>
+          <option value="0.069">Idaho - 6.9%</option>
+          <option value="0.0495">Illinois - 4.95%</option>
+          <option value="0.0323">Indiana - 3.23%</option>
+          <option value="0.0663">Iowa - 6.63%</option>
+          <option value="0.057">Kansas - 5.7%</option>
+          <option value="0.050">Kentucky - 5.0%</option>
+          <option value="0.060">Louisiana - 6.0%</option>
+          <option value="0.0623">Maine - 6.23%</option>
+          <option value="0.0575">Maryland - 5.75%</option>
+          <option value="0.050">Massachusetts - 5.0%</option>
+          <option value="0.0425">Michigan - 4.25%</option>
+          <option value="0.0985">Minnesota - 9.85%</option>
+          <option value="0.050">Mississippi - 5.0%</option>
+          <option value="0.060">Missouri - 6.0%</option>
+          <option value="0.069">Montana - 6.9%</option>
+          <option value="0.0684">Nebraska - 6.84%</option>
+          <option value="0.000">Nevada - 0.0%</option>
+          <option value="0.000">New Hampshire - 0.0%</option>
+          <option value="0.0637">New Jersey - 6.37%</option>
+          <option value="0.049">New Mexico - 4.9%</option>
+          <option value="0.0609">New York - 6.09%</option>
+          <option value="0.0525">North Carolina - 5.25%</option>
+          <option value="0.029">North Dakota - 2.9%</option>
+          <option value="0.04797">Ohio - 4.797%</option>
+          <option value="0.050">Oklahoma - 5.0%</option>
+          <option value="0.099">Oregon - 9.9%</option>
+          <option value="0.0307">Pennsylvania - 3.07%</option>
+          <option value="0.0375">Rhode Island - 3.75%</option>
+          <option value="0.070">South Carolina - 7.0%</option>
+          <option value="0.000">South Dakota - 0.0%</option>
+          <option value="0.010">Tennessee - 1.0%</option>
+          <option value="0.000">Texas - 0.0%</option>
+          <option value="0.0495">Utah - 4.95%</option>
+          <option value="0.0875">Vermont - 8.75%</option>
+          <option value="0.0575">Virginia - 5.75%</option>
+          <option value="0.000">Washington - 0.0%</option>
+          <option value="0.065">West Virginia - 6.5%</option>
+          <option value="0.0765">Wisconsin - 7.65%</option>
+          <option value="0.000">Wyoming - 0.0%</option>
+          <!-- Add Territories if needed -->
+          <option value="0.045">District of Columbia - 4.5%</option>
+          <option value="0.050">Puerto Rico - 5.0%</option>
+          <option value="0.040">Guam - 4.0%</option>
+          <option value="0.030">U.S. Virgin Islands - 3.0%</option>
+          <option value="0.035">Northern Mariana Islands - 3.5%</option>
+        </select>
+      </div>
+      
+      <!-- Benefits Tab -->
+      <div id="Benefits" class="tab-content">
+        <label for="benefits">Benefits Deductions ($):</label>
+        <input type="number" id="benefits" placeholder="Enter benefits deductions" />
+      </div>
+    </div>
+    
+    <!-- Calculate Button -->
+    <button onclick="calculatePaycheck()">Calculate Net Pay</button>
+    
+    <!-- Results Section -->
+    <div class="result-section" id="paycheckResult" style="display:none;">
+      <h3>Paycheck Summary</h3>
+      <div class="result-item">
+        <span>Earnings:</span>
+        <span id="earnings">$0.00</span>
+      </div>
+      <div class="result-item">
+        <span>Taxes:</span>
+        <span id="taxes">$0.00</span>
+      </div>
+      <div style="padding-left: 20px;">
+        <div class="result-item">
+          <span>Federal Income Tax:</span>
+          <span id="federalTax">$0.00</span>
+        </div>
+        <div class="result-item">
+          <span>Social Security Tax:</span>
+          <span id="socialSecurityTax">$0.00</span>
+        </div>
+        <div class="result-item">
+          <span>Medicare Tax:</span>
+          <span id="medicareTax">$0.00</span>
+        </div>
+      </div>
+      <div class="result-item">
+        <span>Benefits:</span>
+        <span id="benefitsDeduction">$0.00</span>
+      </div>
+      <div class="result-item">
+        <span>Take Home:</span>
+        <span id="takeHome">$0.00</span>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Toggle Payment Fields based on Payment Type
+    function togglePaymentFields() {
+      const paymentType = document.getElementById('paymentType').value;
+      if (paymentType === 'hourly') {
+        document.getElementById('hourlyFields').style.display = 'block';
+        document.getElementById('salaryFields').style.display = 'none';
+      } else {
+        document.getElementById('hourlyFields').style.display = 'none';
+        document.getElementById('salaryFields').style.display = 'block';
+      }
+    }
 
-  <label for="hours">Hours Worked (per pay period):</label>
-  <input type="number" id="hours" placeholder="Enter hours worked" />
+    // Tabs Functionality
+    function openTab(evt, tabName) {
+      const tabContents = document.getElementsByClassName('tab-content');
+      for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove('active');
+      }
+      const tabButtons = document.getElementsByClassName('tab-button');
+      for (let i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove('active');
+      }
+      document.getElementById(tabName).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
 
-  <label for="stateSelect">Select Your State:</label>
-  <select id="stateSelect">
-    <option value="">--Select State--</option>
-    <option value="0.050">Alabama - 5.0%</option>
-    <option value="0.000">Alaska - 0.0%</option>
-    <option value="0.045">Arizona - 4.5%</option>
-    <option value="0.060">Arkansas - 6.0%</option>
-    <option value="0.093">California - 9.3%</option>
-    <option value="0.0455">Colorado - 4.55%</option>
-    <option value="0.050">Connecticut - 5.0%</option>
-    <option value="0.066">Delaware - 6.6%</option>
-    <option value="0.000">Florida - 0.0%</option>
-    <option value="0.060">Georgia - 6.0%</option>
-    <option value="0.072">Hawaii - 7.2%</option>
-    <option value="0.069">Idaho - 6.9%</option>
-    <option value="0.0495">Illinois - 4.95%</option>
-    <option value="0.0323">Indiana - 3.23%</option>
-    <option value="0.0663">Iowa - 6.63%</option>
-    <option value="0.057">Kansas - 5.7%</option>
-    <option value="0.050">Kentucky - 5.0%</option>
-    <option value="0.060">Louisiana - 6.0%</option>
-    <option value="0.0623">Maine - 6.23%</option>
-    <option value="0.0575">Maryland - 5.75%</option>
-    <option value="0.050">Massachusetts - 5.0%</option>
-    <option value="0.0425">Michigan - 4.25%</option>
-    <option value="0.0985">Minnesota - 9.85%</option>
-    <option value="0.050">Mississippi - 5.0%</option>
-    <option value="0.060">Missouri - 6.0%</option>
-    <option value="0.069">Montana - 6.9%</option>
-    <option value="0.0684">Nebraska - 6.84%</option>
-    <option value="0.000">Nevada - 0.0%</option>
-    <option value="0.000">New Hampshire - 0.0%</option>
-    <option value="0.0637">New Jersey - 6.37%</option>
-    <option value="0.049">New Mexico - 4.9%</option>
-    <option value="0.0609">New York - 6.09%</option>
-    <option value="0.0525">North Carolina - 5.25%</option>
-    <option value="0.029">North Dakota - 2.9%</option>
-    <option value="0.04797">Ohio - 4.797%</option>
-    <option value="0.050">Oklahoma - 5.0%</option>
-    <option value="0.099">Oregon - 9.9%</option>
-    <option value="0.0307">Pennsylvania - 3.07%</option>
-    <option value="0.0375">Rhode Island - 3.75%</option>
-    <option value="0.070">South Carolina - 7.0%</option>
-    <option value="0.000">South Dakota - 0.0%</option>
-    <option value="0.010">Tennessee - 1.0%</option>
-    <option value="0.000">Texas - 0.0%</option>
-    <option value="0.0495">Utah - 4.95%</option>
-    <option value="0.0875">Vermont - 8.75%</option>
-    <option value="0.0575">Virginia - 5.75%</option>
-    <option value="0.000">Washington - 0.0%</option>
-    <option value="0.065">West Virginia - 6.5%</option>
-    <option value="0.0765">Wisconsin - 7.65%</option>
-    <option value="0.000">Wyoming - 0.0%</option>
-  </select>
+    // Overtime Functionality
+    function addOvertime() {
+      const container = document.getElementById('overtimeContainer');
+      const overtimeDiv = document.createElement('div');
+      overtimeDiv.className = 'overtime-section';
+      overtimeDiv.innerHTML = `
+        <label>Overtime Type:</label>
+        <select class="overtimeType">
+          <option value="regular">Regular</option>
+          <option value="double">Double</option>
+          <option value="other">Other</option>
+        </select>
+        <label>Overtime Hours:</label>
+        <input type="number" class="overtimeHours" placeholder="Enter overtime hours" />
+        <label>Overtime Amount ($):</label>
+        <input type="number" class="overtimeAmount" placeholder="Enter overtime amount" />
+        <button type="button" onclick="removeOvertime(this)">Remove</button>
+      `;
+      container.appendChild(overtimeDiv);
+    }
 
-  <label for="deductions">Other Deductions ($):</label>
-  <input type="number" id="deductions" placeholder="Enter deductions" />
+    function removeOvertime(button) {
+      const overtimeDiv = button.parentElement;
+      overtimeDiv.remove();
+    }
 
-  <button onclick="calculatePaycheck()">Calculate Net Pay</button>
-  <div class="result" id="paycheckResult"></div>
-</div>
+    // Calculate Net Pay
+    function calculatePaycheck() {
+      // Pay (Main) Tab Inputs
+      const payFrequency = document.getElementById('payFrequency').value;
+      const paymentType = document.getElementById('paymentType').value;
+      let grossPay = 0;
 
-<script>
-function calculatePaycheck() {
-  const wage = parseFloat(document.getElementById('wage').value);
-  const hours = parseFloat(document.getElementById('hours').value);
-  const stateSelect = document.getElementById('stateSelect');
-  const stateTaxRate = parseFloat(stateSelect.value);
-  const deductions = parseFloat(document.getElementById('deductions').value);
+      // Payment Type Calculations
+      if (paymentType === 'hourly') {
+        const wage = parseFloat(document.getElementById('wage').value);
+        const hours = parseFloat(document.getElementById('hours').value);
+        if (isNaN(wage) || isNaN(hours)) {
+          alert('Please enter valid hourly wage and hours worked.');
+          return;
+        }
+        grossPay = wage * hours;
+      } else {
+        const salaryMethod = document.getElementById('salaryMethod').value;
+        const salaryAmount = parseFloat(document.getElementById('salaryAmount').value);
+        if (isNaN(salaryAmount)) {
+          alert('Please enter a valid salary amount.');
+          return;
+        }
+        if (salaryMethod === 'annual') {
+          switch(payFrequency) {
+            case 'weekly':
+              grossPay = salaryAmount / 52;
+              break;
+            case 'biweekly':
+              grossPay = salaryAmount / 26;
+              break;
+            case 'monthly':
+              grossPay = salaryAmount / 12;
+              break;
+            case 'semimonthly':
+              grossPay = salaryAmount / 24;
+              break;
+            default:
+              grossPay = salaryAmount;
+          }
+        } else {
+          grossPay = salaryAmount;
+        }
+      }
 
-  if(isNaN(wage) || isNaN(hours) || isNaN(stateTaxRate) || isNaN(deductions) || stateSelect.value === "") {
-    alert('Please fill in all fields correctly and select a state.');
-    return;
-  }
+      // Overtime Calculations
+      const overtimeSections = document.getElementsByClassName('overtime-section');
+      let totalOvertime = 0;
+      for (let i = 0; i < overtimeSections.length; i++) {
+        const type = overtimeSections[i].querySelector('.overtimeType').value;
+        const hours = parseFloat(overtimeSections[i].querySelector('.overtimeHours').value) || 0;
+        const amount = parseFloat(overtimeSections[i].querySelector('.overtimeAmount').value) || 0;
+        totalOvertime += (hours * amount);
+      }
 
-  const grossPay = wage * hours;
-  const stateTax = grossPay * stateTaxRate;
-  const socialSecurity = grossPay * 0.062;
-  const medicare = grossPay * 0.0145;
-  const netPay = grossPay - stateTax - socialSecurity - medicare - deductions;
+      grossPay += totalOvertime;
 
-  document.getElementById('paycheckResult').textContent = 
-    `Net Pay: $${netPay.toFixed(2)}`;
-}
-</script>
+      // Other Deductions (from Pay (Main) Tab)
+      const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+
+      // Federal Taxes Tab Inputs
+      const w4Version = document.getElementById('w4Version').value;
+      const nonresidentAlien = document.getElementById('nonresidentAlien').value;
+      const filingStatus = document.getElementById('filingStatus').value;
+      const multipleJobs = document.getElementById('multipleJobs').value;
+      const dependentAmount = parseFloat(document.getElementById('dependentAmount').value) || 0;
+      const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+      const deductionAmount = parseFloat(document.getElementById('deductionAmount').value) || 0;
+      const additionalWithholding = parseFloat(document.getElementById('additionalWithholding').value) || 0;
+      const exemptFederal = document.getElementById('exemptFederal').value;
+      const exemptMedicare = document.getElementById('exemptMedicare').value;
+      const exemptSocialSecurity = document.getElementById('exemptSocialSecurity').value;
+
+      // Placeholder for Federal Tax Calculation
+      // Implement actual federal tax logic based on inputs
+      // For demonstration, let's use a flat 10% rate and add additional withholding
+      let federalTax = 0;
+      if (exemptFederal === 'No') {
+        federalTax = grossPay * 0.10; // Placeholder rate
+        federalTax += additionalWithholding;
+      }
+
+      // State Taxes Tab Input
+      const stateSelect = document.getElementById('stateSelect');
+      const stateTaxRate = parseFloat(stateSelect.value) || 0;
+      const stateTax = grossPay * stateTaxRate;
+
+      // Social Security and Medicare
+      let socialSecurity = grossPay * 0.062;
+      let medicare = grossPay * 0.0145;
+
+      if (exemptSocialSecurity === 'Yes') {
+        socialSecurity = 0;
+      }
+      if (exemptMedicare === 'Yes') {
+        medicare = 0;
+      }
+
+      // Total Taxes
+      const totalTaxes = federalTax + socialSecurity + medicare;
+
+      // Benefits Tab Input
+      const benefits = parseFloat(document.getElementById('benefits').value) || 0;
+
+      // Take Home Calculation
+      const takeHome = grossPay - totalTaxes - benefits - deductions;
+
+      // Display Results
+      document.getElementById('earnings').textContent = `$${grossPay.toFixed(2)}`;
+      document.getElementById('federalTax').textContent = `$${federalTax.toFixed(2)}`;
+      document.getElementById('socialSecurityTax').textContent = `$${socialSecurity.toFixed(2)}`;
+      document.getElementById('medicareTax').textContent = `$${medicare.toFixed(2)}`;
+      document.getElementById('taxes').textContent = `$${totalTaxes.toFixed(2)}`;
+      document.getElementById('benefitsDeduction').textContent = `$${benefits.toFixed(2)}`;
+      document.getElementById('takeHome').textContent = `$${takeHome.toFixed(2)}`;
+
+      // Show the results section
+      document.getElementById('paycheckResult').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
