@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Web Calculator</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .calculator {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            width: 420px;
+            max-width: 100%;
+        }
+
+        .display {
+            background-color: #444;
+            color: #fff;
+            font-size: 2em;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: right;
+            overflow-x: auto;
+            min-height: 60px;
+            word-wrap: break-word;
+        }
+
+        .mode-toggle {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .mode-toggle label {
+            color: #fff;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            filter: brightness(90%);
+        }
+
+        /* Button Styles */
+        .button-number {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .button-operator {
+            background-color: #ff9500;
+            color: #fff;
+        }
+
+        .button-function {
+            background-color: #555;
+            color: #fff;
+        }
+
+        .button-inverse {
+            background-color: #666;
+            color: #fff;
+        }
+
+        .button-log {
+            background-color: #777;
+            color: #fff;
+        }
+
+        .button-clear {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .button-equals {
+            background-color: #28a745;
+            color: #fff;
+            grid-column: span 2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 500px) {
+            .calculator {
+                width: 90%;
+            }
+
+            .display {
+                font-size: 1.5em;
+                padding: 10px;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+
+            .mode-toggle {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div id="display" class="display">0</div>
+        
+        <!-- Mode Toggle: Degree and Radian -->
+        <div class="mode-toggle">
+            <label>
+                <input type="radio" name="mode" value="deg" checked> Degree
+            </label>
+            <label>
+                <input type="radio" name="mode" value="rad"> Radian
+            </label>
+        </div>
+
+        <div class="buttons">
+            <!-- Row 1: Primary Functions -->
+            <button class="button-function" data-func="sin">sin</button>
+            <button class="button-function" data-func="cos">cos</button>
+            <button class="button-function" data-func="tan">tan</button>
+            <button class="button-function" data-func="√">√</button>
+            <button class="button-operator" data-operator="^">^</button>
+
+            <!-- Row 2: Inverse Functions and Logarithms -->
+            <button class="button-inverse" data-func="sin-1">sin⁻¹</button>
+            <button class="button-inverse" data-func="cos-1">cos⁻¹</button>
+            <button class="button-inverse" data-func="tan-1">tan⁻¹</button>
+            <button class="button-log" data-func="log">log</button>
+            <button class="button-log" data-func="ln">ln</button>
+
+            <!-- Row 3: Parentheses and Clear -->
+            <button class="button-operator" data-func="(">(</button>
+            <button class="button-operator" data-func=")">)</button>
+            <button class="button-clear">C</button>
+            <button class="button-operator" data-operator="÷">÷</button>
+            <button class="button-operator" data-operator="%">%</button>
+
+            <!-- Row 4: Numbers 7-9 and Multiply -->
+            <button class="button-number" data-number="7">7</button>
+            <button class="button-number" data-number="8">8</button>
+            <button class="button-number" data-number="9">9</button>
+            <button class="button-operator" data-operator="×">×</button>
+            <button class="button-function" data-func="π">π</button>
+
+            <!-- Row 5: Numbers 4-6 and Subtract -->
+            <button class="button-number" data-number="4">4</button>
+            <button class="button-number" data-number="5">5</button>
+            <button class="button-number" data-number="6">6</button>
+            <button class="button-operator" data-operator="-">−</button>
+            <button class="button-function" data-func="e">e</button>
+
+            <!-- Row 6: Numbers 1-3 and Add -->
+            <button class="button-number" data-number="1">1</button>
+            <button class="button-number" data-number="2">2</button>
+            <button class="button-number" data-number="3">3</button>
+            <button class="button-operator" data-operator="+">+</button>
+            <button class="button-function" data-func="ans">Ans</button>
+
+            <!-- Row 7: Zero, Decimal, and Equals -->
+            <button class="button-number" data-number="0" style="grid-column: span 2;">0</button>
+            <button class="button-number" data-number=".">.</button>
+            <button class="button-equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('button');
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        let currentInput = '';
+        let lastAnswer = '';
+        let resetDisplay = false;
+        let currentMode = 'deg'; // Default mode
+
+        // Update currentMode based on selected radio button
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                currentMode = radio.value;
+            });
+        });
+
+        // Define custom trigonometric functions
+        function sin(x) {
+            return Math.sin(currentMode === 'deg' ? x * (Math.PI / 180) : x);
+        }
+
+        function cos(x) {
+            return Math.cos(currentMode === 'deg' ? x * (Math.PI / 180) : x);
+        }
+
+        function tan(x) {
+            return Math.tan(currentMode === 'deg' ? x * (Math.PI / 180) : x);
+        }
+
+        function asin(x) {
+            let result = Math.asin(x);
+            return currentMode === 'deg' ? result * (180 / Math.PI) : result;
+        }
+
+        function acos(x) {
+            let result = Math.acos(x);
+            return currentMode === 'deg' ? result * (180 / Math.PI) : result;
+        }
+
+        function atan(x) {
+            let result = Math.atan(x);
+            return currentMode === 'deg' ? result * (180 / Math.PI) : result;
+        }
+
+        // Define logarithmic functions
+        function log(x) {
+            return Math.log10(x);
+        }
+
+        function ln(x) {
+            return Math.log(x);
+        }
+
+        // Define a custom sqrt function
+        function sqrt(x) {
+            return Math.sqrt(x);
+        }
+
+        // Expose functions to the global scope for eval
+        window.sin = sin;
+        window.cos = cos;
+        window.tan = tan;
+        window.asin = asin;
+        window.acos = acos;
+        window.atan = atan;
+        window.log = log;
+        window.ln = ln;
+        window.sqrt = sqrt;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.classList.contains('button-number')) {
+                    appendNumber(button.dataset.number);
+                } else if (button.classList.contains('button-operator')) {
+                    appendOperator(button.dataset.func || button.dataset.operator);
+                } else if (button.classList.contains('button-function')) {
+                    appendFunction(button.dataset.func);
+                } else if (button.classList.contains('button-inverse')) {
+                    appendInverseFunction(button.dataset.func);
+                } else if (button.classList.contains('button-log')) {
+                    appendLogFunction(button.dataset.func);
+                } else if (button.classList.contains('button-clear')) {
+                    clearDisplay();
+                } else if (button.classList.contains('button-equals')) {
+                    calculate();
+                }
+            });
+        });
+
+        function appendNumber(number) {
+            if (resetDisplay) {
+                currentInput = '';
+                resetDisplay = false;
+            }
+            if (currentInput === '0' && number !== '.') {
+                currentInput = number;
+            } else {
+                currentInput += number;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(operator) {
+            if (resetDisplay) {
+                resetDisplay = false;
+            }
+            // Prevent multiple operators in a row
+            if (/[+\-×÷^%]$/.test(currentInput)) {
+                currentInput = currentInput.slice(0, -1) + operator;
+            } else {
+                currentInput += operator;
+            }
+            updateDisplay();
+        }
+
+        function appendFunction(func) {
+            if (resetDisplay) {
+                currentInput = '';
+                resetDisplay = false;
+            }
+            switch (func) {
+                case '√':
+                    currentInput += 'sqrt(';
+                    break;
+                case 'π':
+                    currentInput += Math.PI.toFixed(10);
+                    break;
+                case 'e':
+                    currentInput += Math.E.toFixed(10);
+                    break;
+                case 'ans':
+                    currentInput += lastAnswer || '0';
+                    break;
+                case 'sin':
+                case 'cos':
+                case 'tan':
+                    currentInput += `${func}(`;
+                    break;
+                default:
+                    // If additional functions are added in the future
+                    currentInput += `${func}(`;
+            }
+            updateDisplay();
+        }
+
+        function appendInverseFunction(func) {
+            if (resetDisplay) {
+                currentInput = '';
+                resetDisplay = false;
+            }
+            switch (func) {
+                case 'sin-1':
+                    currentInput += 'asin(';
+                    break;
+                case 'cos-1':
+                    currentInput += 'acos(';
+                    break;
+                case 'tan-1':
+                    currentInput += 'atan(';
+                    break;
+                default:
+                    // If additional inverse functions are added in the future
+                    currentInput += `${func}(`;
+            }
+            updateDisplay();
+        }
+
+        function appendLogFunction(func) {
+            if (resetDisplay) {
+                currentInput = '';
+                resetDisplay = false;
+            }
+            switch (func) {
+                case 'log':
+                    currentInput += 'log(';
+                    break;
+                case 'ln':
+                    currentInput += 'ln(';
+                    break;
+                default:
+                    // If additional log functions are added in the future
+                    currentInput += `${func}(`;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            updateDisplay('0');
+            resetDisplay = false;
+        }
+
+        function updateDisplay(content) {
+            display.textContent = content !== undefined ? content : currentInput;
+        }
+
+        function calculate() {
+            try {
+                let expression = currentInput
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-')
+                    .replace(/%/g, '/100')
+                    .replace(/\^/g, '**');
+
+                // Evaluate the expression with custom functions
+                const result = eval(expression);
+
+                if (result === undefined || result === null || isNaN(result)) {
+                    throw new Error('Invalid Expression');
+                }
+
+                updateDisplay(result);
+                lastAnswer = result.toString();
+                currentInput = ''; // Clear current input to allow new expressions
+                resetDisplay = true;
+            } catch (error) {
+                updateDisplay('Error');
+                currentInput = '';
+                resetDisplay = true;
+            }
+        }
+
+        // Optional: Allow keyboard input
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if (!isNaN(key) || key === '.') {
+                appendNumber(key);
+            } else if (['+', '-', '*', '/', '^', '%'].includes(key)) {
+                appendOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Backspace') {
+                currentInput = currentInput.slice(0, -1);
+                updateDisplay();
+            } else if (key === 'c' || key === 'C') {
+                clearDisplay();
+            } else if (key === '(' || key === ')') {
+                appendOperator(key);
+            }
+        });
+    </script>
+
+</body>
+</html>
