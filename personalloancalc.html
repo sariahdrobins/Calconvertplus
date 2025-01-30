@@ -1,0 +1,418 @@
+<!-- Personal Loan Calculator Start -->
+<style>
+    /* CSS Variables for Theming */
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #50e3c2;
+        --background-color: #f5f7fa;
+        --text-color: #333;
+        --border-color: #ddd;
+        --button-hover-color: #357abd;
+        --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        --input-background: #fff;
+        --input-border: #ccc;
+        --table-header-background: #4a90e2;
+        --table-header-text: #fff;
+        --button-background: #4a90e2;
+        --button-text: #fff;
+        --button-hover: #357abd;
+    }
+
+    .calculator-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1, h2, h3 {
+        color: var(--primary-color);
+        text-align: center;
+    }
+
+    .form-section {
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px;
+        border: 1px solid var(--input-border);
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: var(--input-background);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+
+    .calculate-button,
+    .toggle-button,
+    .export-button {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .calculate-button:hover,
+    .toggle-button:hover,
+    .export-button:hover {
+        background-color: var(--button-hover);
+    }
+
+    .results-section {
+        margin-top: 30px;
+    }
+
+    .summary p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+    .amortization-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .amortization-table th,
+    .amortization-table td {
+        border: 1px solid var(--border-color);
+        padding: 10px;
+        text-align: center;
+    }
+
+    .amortization-table th {
+        background-color: var(--table-header-background);
+        color: var(--table-header-text);
+    }
+
+    .toggle-button {
+        margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .calculator-container {
+            padding: 20px;
+        }
+
+        .amortization-table table,
+        .amortization-table th,
+        .amortization-table td {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="calculator-container">
+    <h1>Personal Loan Calculator</h1>
+    <form id="loan-form">
+        <!-- Required Loan Details Section -->
+        <div class="form-section">
+            <h2>Loan Details</h2>
+            <div class="form-group">
+                <label for="loanAmount">Loan Amount ($):</label>
+                <input type="number" id="loanAmount" name="loanAmount" placeholder="e.g., 20000" required>
+            </div>
+            <div class="form-group">
+                <label for="interestRate">Interest Rate (%):</label>
+                <input type="number" id="interestRate" name="interestRate" step="0.01" placeholder="e.g., 10" required>
+            </div>
+            <div class="form-group">
+                <label>Loan Term:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="loanTermYears" name="loanTermYears" placeholder="Years" min="0" required>
+                    <input type="number" id="loanTermMonths" name="loanTermMonths" placeholder="Months" min="0" max="11" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="startMonth">Start Date:</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="startMonth" name="startMonth" required>
+                        <option value="" disabled selected>Month</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                    </select>
+                    <input type="number" id="startYear" name="startYear" placeholder="Year (e.g., 2025)" min="1900" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional Fees Section -->
+        <div class="form-section">
+            <h2>Optional Fees</h2>
+            <div class="form-group">
+                <label>Origination Fee:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="originationFeeAmount" name="originationFeeAmount" placeholder="Amount ($)" min="0">
+                    <span>or</span>
+                    <input type="number" id="originationFeePercent" name="originationFeePercent" placeholder="Percentage (%)" step="0.01" min="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="insurance">Insurance ($/month):</label>
+                <input type="number" id="insurance" name="insurance" placeholder="e.g., 0" min="0">
+            </div>
+        </div>
+
+        <button type="submit" class="calculate-button">Calculate</button>
+    </form>
+
+    <!-- Results Section -->
+    <div class="results-section" id="results" style="display: none;">
+        <h2>Loan Summary</h2>
+        <div class="summary">
+            <p><strong>Loan Amount:</strong> $<span id="summary-loanAmount"></span></p>
+            <p><strong>Interest Rate:</strong> <span id="summary-interestRate"></span>%</p>
+            <p><strong>Loan Term:</strong> <span id="summary-loanTerm"></span></p>
+            <p><strong>Start Date:</strong> <span id="summary-startDate"></span></p>
+            <p><strong>Origination Fee:</strong> $<span id="summary-originationFee"></span></p>
+            <p><strong>Insurance ($/month):</strong> $<span id="summary-insurance"></span></p>
+            <p><strong>Monthly Payment:</strong> $<span id="summary-monthlyPayment"></span></p>
+            <p><strong>Total Payment:</strong> $<span id="summary-totalPayment"></span></p>
+            <p><strong>Total Interest:</strong> $<span id="summary-totalInterest"></span></p>
+        </div>
+
+        <!-- Amortization Schedule -->
+        <div class="amortization-table">
+            <h3>Amortization Schedule (First 12 Payments)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Payment #</th>
+                        <th>Date</th>
+                        <th>Payment ($)</th>
+                        <th>Principal ($)</th>
+                        <th>Interest ($)</th>
+                        <th>Insurance ($)</th>
+                        <th>Balance ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="amortizationBody">
+                    <!-- Rows will be inserted here -->
+                </tbody>
+            </table>
+            <button id="toggle-fullSchedule" class="toggle-button">Show Full Schedule</button>
+            <div id="fullSchedule" style="display: none;">
+                <h3>Full Amortization Schedule</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Payment #</th>
+                            <th>Date</th>
+                            <th>Payment ($)</th>
+                            <th>Principal ($)</th>
+                            <th>Interest ($)</th>
+                            <th>Insurance ($)</th>
+                            <th>Balance ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fullAmortizationBody">
+                        <!-- Full schedule will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('loan-form');
+        const resultsSection = document.getElementById('results');
+
+        // Toggle Full Schedule Button Event Listener
+        const toggleButton = document.getElementById('toggle-fullSchedule');
+        const fullSchedule = document.getElementById('fullSchedule');
+        toggleButton.addEventListener('click', function() {
+            if (fullSchedule.style.display === 'none') {
+                fullSchedule.style.display = 'block';
+                toggleButton.innerText = 'Hide Full Schedule';
+            } else {
+                fullSchedule.style.display = 'none';
+                toggleButton.innerText = 'Show Full Schedule';
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Gather input values
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const loanTermYears = parseInt(document.getElementById('loanTermYears').value);
+            const loanTermMonths = parseInt(document.getElementById('loanTermMonths').value);
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            const startYear = parseInt(document.getElementById('startYear').value);
+            const originationFeeAmount = parseFloat(document.getElementById('originationFeeAmount').value) || 0;
+            const originationFeePercent = parseFloat(document.getElementById('originationFeePercent').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+
+            // Validate inputs
+            if (originationFeeAmount > 0 && originationFeePercent > 0) {
+                alert("Please enter either Origination Fee Amount or Percentage, not both.");
+                return;
+            }
+
+            // Calculate Origination Fee
+            let originationFee = 0;
+            if (originationFeeAmount > 0) {
+                originationFee = originationFeeAmount;
+            } else if (originationFeePercent > 0) {
+                originationFee = (originationFeePercent / 100) * loanAmount;
+            }
+
+            // Total Loan Amount including Origination Fee
+            const totalLoanAmount = loanAmount + originationFee;
+
+            // Total Loan Term in months
+            const totalLoanTermMonths = (loanTermYears * 12) + loanTermMonths;
+
+            // Monthly Interest Rate
+            const monthlyInterestRate = interestRate / 100 / 12;
+
+            // Calculate Monthly Payment using the formula:
+            // M = P * r * (1 + r)^n / ((1 + r)^n - 1)
+            let monthlyPayment = 0;
+            if (monthlyInterestRate === 0) {
+                monthlyPayment = totalLoanAmount / totalLoanTermMonths;
+            } else {
+                monthlyPayment = totalLoanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, totalLoanTermMonths) /
+                                 (Math.pow(1 + monthlyInterestRate, totalLoanTermMonths) - 1);
+            }
+
+            // Total Payment and Total Interest
+            const totalPayment = monthlyPayment * totalLoanTermMonths;
+            const totalInterest = totalPayment - totalLoanAmount;
+
+            // Initialize variables for amortization schedule
+            let balance = totalLoanAmount;
+            let schedule = [];
+            let paymentDate = new Date(startYear, startMonth - 1, 1); // Months are 0-based
+
+            for (let i = 1; i <= totalLoanTermMonths; i++) {
+                let interestPayment = balance * monthlyInterestRate;
+                let principalPayment = monthlyPayment - interestPayment;
+                let totalInsurance = insurance;
+                let totalPaymentMonthly = monthlyPayment + insurance;
+
+                // Adjust the last payment to avoid negative balance due to rounding
+                if (principalPayment > balance) {
+                    principalPayment = balance;
+                    totalPaymentMonthly = balance + interestPayment + insurance;
+                }
+
+                balance -= principalPayment;
+                if (balance < 0.01) balance = 0;
+
+                schedule.push({
+                    paymentNumber: i,
+                    date: formatDate(paymentDate),
+                    payment: totalPaymentMonthly.toFixed(2),
+                    principal: principalPayment.toFixed(2),
+                    interest: interestPayment.toFixed(2),
+                    insurance: totalInsurance.toFixed(2),
+                    balance: balance.toFixed(2)
+                });
+
+                // Move to next month
+                paymentDate.setMonth(paymentDate.getMonth() + 1);
+            }
+
+            // Update summary in the UI
+            document.getElementById('summary-loanAmount').innerText = totalLoanAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('summary-interestRate').innerText = interestRate.toFixed(2);
+            document.getElementById('summary-loanTerm').innerText = `${loanTermYears} years, ${loanTermMonths} months`;
+            document.getElementById('summary-startDate').innerText = `${getMonthName(startMonth)} ${startYear}`;
+            document.getElementById('summary-originationFee').innerText = originationFee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('summary-insurance').innerText = insurance.toFixed(2);
+            document.getElementById('summary-monthlyPayment').innerText = monthlyPayment.toFixed(2);
+            document.getElementById('summary-totalPayment').innerText = totalPayment.toFixed(2);
+            document.getElementById('summary-totalInterest').innerText = totalInterest.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            // Populate amortization schedule (first 12 payments)
+            const amortizationBody = document.getElementById('amortizationBody');
+            amortizationBody.innerHTML = '';
+            for (let i = 0; i < Math.min(12, schedule.length); i++) {
+                const payment = schedule[i];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.paymentNumber}</td>
+                    <td>${payment.date}</td>
+                    <td>$${payment.payment}</td>
+                    <td>$${payment.principal}</td>
+                    <td>$${payment.interest}</td>
+                    <td>$${payment.insurance}</td>
+                    <td>$${payment.balance}</td>
+                `;
+                amortizationBody.appendChild(row);
+            }
+
+            // Populate full amortization schedule
+            const fullAmortizationBody = document.getElementById('fullAmortizationBody');
+            fullAmortizationBody.innerHTML = '';
+            schedule.forEach(payment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.paymentNumber}</td>
+                    <td>${payment.date}</td>
+                    <td>$${payment.payment}</td>
+                    <td>$${payment.principal}</td>
+                    <td>$${payment.interest}</td>
+                    <td>$${payment.insurance}</td>
+                    <td>$${payment.balance}</td>
+                `;
+                fullAmortizationBody.appendChild(row);
+            });
+
+            // Show results section
+            resultsSection.style.display = 'block';
+        });
+
+        // Helper function to format date
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'short' };
+            return date.toLocaleDateString(undefined, options);
+        }
+
+        // Helper function to get month name from number
+        function getMonthName(monthNumber) {
+            const date = new Date();
+            date.setMonth(monthNumber - 1);
+            return date.toLocaleString('default', { month: 'long' });
+        }
+    });
+</script>
+<!-- Personal Loan Calculator End -->
