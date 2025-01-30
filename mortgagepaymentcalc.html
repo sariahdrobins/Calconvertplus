@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Mortgage Payment Calculator</title>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #50e3c2;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --border-color: #ddd;
+            --button-hover-color: #357abd;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --input-background: #fff;
+            --input-border: #ccc;
+            --table-header-background: #4a90e2;
+            --table-header-text: #fff;
+            --button-background: #4a90e2;
+            --button-text: #fff;
+            --button-hover: #357abd;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--input-background);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .calculate-button,
+        .toggle-button,
+        .export-button {
+            background-color: var(--button-background);
+            color: var(--button-text);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .calculate-button:hover,
+        .toggle-button:hover,
+        .export-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .summary p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .amortization-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .amortization-table th,
+        .amortization-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .amortization-table th {
+            background-color: var(--table-header-background);
+            color: var(--table-header-text);
+        }
+
+        .toggle-button {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 20px;
+            }
+
+            .amortization-table table,
+            .amortization-table th,
+            .amortization-table td {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Advanced Mortgage Payment Calculator</h1>
+        <form id="mortgage-form">
+            <!-- Loan Details Section -->
+            <div class="form-section">
+                <h2>Loan Details</h2>
+                <div class="form-group">
+                    <label for="homePrice">Home Price ($):</label>
+                    <input type="number" id="homePrice" name="homePrice" placeholder="e.g., 350000" required>
+                </div>
+                <div class="form-group">
+                    <label for="downPayment">Down Payment ($):</label>
+                    <input type="number" id="downPayment" name="downPayment" placeholder="e.g., 70000" required>
+                </div>
+                <div class="form-group">
+                    <label for="annualInterestRate">Annual Interest Rate (%):</label>
+                    <input type="number" id="annualInterestRate" name="annualInterestRate" step="0.01" placeholder="e.g., 3.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="loanTerm">Loan Term (Years):</label>
+                    <input type="number" id="loanTerm" name="loanTerm" placeholder="e.g., 30" required>
+                </div>
+                <div class="form-group">
+                    <label for="interestType">Interest Type:</label>
+                    <select id="interestType" name="interestType">
+                        <option value="fixed">Fixed Rate</option>
+                        <option value="variable">Adjustable Rate</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Additional Costs Section -->
+            <div class="form-section">
+                <h2>Additional Costs (Optional)</h2>
+                <div class="form-group">
+                    <label for="propertyTaxes">Annual Property Taxes ($):</label>
+                    <input type="number" id="propertyTaxes" name="propertyTaxes" placeholder="e.g., 3000">
+                </div>
+                <div class="form-group">
+                    <label for="homeInsurance">Annual Homeowners Insurance ($):</label>
+                    <input type="number" id="homeInsurance" name="homeInsurance" placeholder="e.g., 1200">
+                </div>
+                <div class="form-group">
+                    <label for="pmi">Private Mortgage Insurance (PMI) (%):</label>
+                    <input type="number" id="pmi" name="pmi" step="0.01" placeholder="e.g., 0.5">
+                </div>
+            </div>
+
+            <!-- Payment Options Section -->
+            <div class="form-section">
+                <h2>Payment Options (Optional)</h2>
+                <div class="form-group">
+                    <label for="paymentFrequency">Payment Frequency:</label>
+                    <select id="paymentFrequency" name="paymentFrequency">
+                        <option value="monthly">Monthly</option>
+                        <option value="biweekly">Bi-Weekly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="extraMonthlyPayment">Extra Monthly Payment ($):</label>
+                    <input type="number" id="extraMonthlyPayment" name="extraMonthlyPayment" placeholder="e.g., 200">
+                </div>
+                <div class="form-group">
+                    <label for="lumpSumPayment">Lump-Sum Payment ($):</label>
+                    <input type="number" id="lumpSumPayment" name="lumpSumPayment" placeholder="e.g., 5000">
+                </div>
+                <div class="form-group">
+                    <label for="lumpSumMonth">At Payment #:</label>
+                    <input type="number" id="lumpSumMonth" name="lumpSumMonth" placeholder="e.g., 12">
+                </div>
+            </div>
+
+            <button type="submit" class="calculate-button">Calculate</button>
+        </form>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results" style="display: none;">
+            <h2>Mortgage Summary</h2>
+            <div class="summary">
+                <p><strong>Home Price:</strong> $<span id="summary-homePrice"></span></p>
+                <p><strong>Down Payment:</strong> $<span id="summary-downPayment"></span></p>
+                <p><strong>Loan Amount:</strong> $<span id="summary-loanAmount"></span></p>
+                <p><strong>Annual Interest Rate:</strong> <span id="summary-interestRate"></span>%</p>
+                <p><strong>Loan Term:</strong> <span id="summary-loanTerm"></span> years</p>
+                <p><strong>Interest Type:</strong> <span id="summary-interestType"></span></p>
+                <p><strong>Payment Frequency:</strong> <span id="summary-paymentFrequency"></span></p>
+                <p><strong>Monthly Payment (without extra):</strong> $<span id="summary-monthlyPayment"></span></p>
+                <p id="summary-extraPayment" style="display: none;"><strong>Extra Monthly Payment:</strong> $<span id="summary-extraMonthlyPayment"></span></p>
+                <p id="summary-pmi" style="display: none;"><strong>PMI:</strong> <span id="summary-pmiValue"></span>%</p>
+                <p><strong>Total Payments:</strong> <span id="summary-totalPayments"></span> payments</p>
+                <p><strong>Total Interest Paid:</strong> $<span id="summary-totalInterest"></span></p>
+                <p><strong>Time Saved:</strong> <span id="summary-timeSaved"></span> years</p>
+                <p><strong>Interest Saved:</strong> $<span id="summary-interestSaved"></span></p>
+            </div>
+
+            <!-- Amortization Schedule -->
+            <div class="amortization-table">
+                <h3>Amortization Schedule (First 12 Payments)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Payment #</th>
+                            <th>Payment ($)</th>
+                            <th>Principal ($)</th>
+                            <th>Interest ($)</th>
+                            <th>PMI ($)</th>
+                            <th>Total Interest ($)</th>
+                            <th>Balance ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amortizationBody">
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+                <button id="toggle-fullSchedule" class="toggle-button">Show Full Schedule</button>
+                <div id="fullSchedule" style="display: none;">
+                    <h3>Full Amortization Schedule</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment #</th>
+                                <th>Payment ($)</th>
+                                <th>Principal ($)</th>
+                                <th>Interest ($)</th>
+                                <th>PMI ($)</th>
+                                <th>Total Interest ($)</th>
+                                <th>Balance ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullAmortizationBody">
+                            <!-- Full schedule will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('mortgage-form');
+            const resultsSection = document.getElementById('results');
+
+            // Toggle Full Schedule Button Event Listener
+            const toggleButton = document.getElementById('toggle-fullSchedule');
+            const fullSchedule = document.getElementById('fullSchedule');
+            toggleButton.addEventListener('click', function() {
+                if (fullSchedule.style.display === 'none') {
+                    fullSchedule.style.display = 'block';
+                    toggleButton.innerText = 'Hide Full Schedule';
+                } else {
+                    fullSchedule.style.display = 'none';
+                    toggleButton.innerText = 'Show Full Schedule';
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Gather input values
+                const homePrice = parseFloat(document.getElementById('homePrice').value);
+                const downPayment = parseFloat(document.getElementById('downPayment').value);
+                const loanAmount = homePrice - downPayment;
+
+                const annualInterestRate = parseFloat(document.getElementById('annualInterestRate').value);
+                const loanTermYears = parseInt(document.getElementById('loanTerm').value);
+                const interestType = document.getElementById('interestType').value;
+
+                const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+                const homeInsurance = parseFloat(document.getElementById('homeInsurance').value) || 0;
+                const pmiRate = parseFloat(document.getElementById('pmi').value) || 0;
+
+                const paymentFrequency = document.getElementById('paymentFrequency').value;
+                const extraMonthlyPayment = parseFloat(document.getElementById('extraMonthlyPayment').value) || 0;
+                const lumpSumPayment = parseFloat(document.getElementById('lumpSumPayment').value) || 0;
+                const lumpSumMonth = parseInt(document.getElementById('lumpSumMonth').value) || 0;
+
+                // Validate inputs
+                if (downPayment > homePrice) {
+                    alert("Down Payment cannot be greater than Home Price.");
+                    return;
+                }
+
+                // Calculate payment parameters
+                let paymentsPerYear = paymentFrequency === 'monthly' ? 12 : 26;
+                let totalNumberOfPayments = loanTermYears * paymentsPerYear;
+
+                // Calculate PMI monthly payment
+                let pmiMonthly = 0;
+                if (pmiRate > 0) {
+                    pmiMonthly = (loanAmount * (pmiRate / 100)) / 12;
+                }
+
+                // Calculate periodic interest rate
+                let periodicInterestRate = annualInterestRate / 100 / 12;
+
+                // Adjust for payment frequency
+                if (paymentFrequency === 'biweekly') {
+                    periodicInterestRate = annualInterestRate / 100 / 26;
+                }
+
+                // Calculate base payment using the formula
+                let basePayment = 0;
+                if (interestType === 'fixed') {
+                    if (periodicInterestRate === 0) {
+                        basePayment = loanAmount / totalNumberOfPayments;
+                    } else {
+                        basePayment = loanAmount * (periodicInterestRate * Math.pow(1 + periodicInterestRate, totalNumberOfPayments)) /
+                                      (Math.pow(1 + periodicInterestRate, totalNumberOfPayments) - 1);
+                    }
+                } else {
+                    // Adjustable Rate Mortgage (ARM) implementation can be expanded here
+                    // For simplicity, treating it as fixed in this implementation
+                    if (periodicInterestRate === 0) {
+                        basePayment = loanAmount / totalNumberOfPayments;
+                    } else {
+                        basePayment = loanAmount * (periodicInterestRate * Math.pow(1 + periodicInterestRate, totalNumberOfPayments)) /
+                                      (Math.pow(1 + periodicInterestRate, totalNumberOfPayments) - 1);
+                    }
+                }
+
+                // Initialize variables for amortization
+                let balance = loanAmount;
+                let totalInterest = 0;
+                let schedule = [];
+                let paymentNumber = 0;
+                let originalTotalPayments = totalNumberOfPayments;
+                let originalTotalInterest = 0;
+
+                // Generate original schedule without extra payments for comparison
+                let originalBalance = loanAmount;
+                for (let i = 1; i <= originalTotalPayments; i++) {
+                    let interestPayment = originalBalance * periodicInterestRate;
+                    let principalPayment = basePayment - interestPayment;
+                    if (principalPayment > originalBalance) {
+                        principalPayment = originalBalance;
+                        basePayment = principalPayment + interestPayment;
+                    }
+                    originalBalance -= principalPayment;
+                    originalTotalInterest += interestPayment;
+                    if (originalBalance <= 0) break;
+                }
+
+                // Generate new schedule with extra payments
+                while (balance > 0 && paymentNumber < totalNumberOfPayments + 1000) { // Prevent infinite loop
+                    paymentNumber++;
+                    let interestPayment = balance * periodicInterestRate;
+                    let principalPayment = basePayment - interestPayment;
+                    let currentPMI = pmiMonthly;
+
+                    // Apply extra monthly payment
+                    principalPayment += extraMonthlyPayment;
+
+                    // Apply lump-sum payment if applicable
+                    if (paymentNumber === lumpSumMonth) {
+                        principalPayment += lumpSumPayment;
+                    }
+
+                    // Calculate total payment
+                    let currentTotalPayment = basePayment + extraMonthlyPayment + (paymentNumber === lumpSumMonth ? lumpSumPayment : 0) + currentPMI;
+                    if (paymentFrequency === 'biweekly') {
+                        // No adjustment needed; basePayment already per biweekly period
+                        // Keeping it same as monthly for simplicity
+                        currentTotalPayment = basePayment + extraMonthlyPayment + (paymentNumber === lumpSumMonth ? lumpSumPayment : 0) + currentPMI;
+                    }
+
+                    if (principalPayment > balance) {
+                        principalPayment = balance;
+                        currentTotalPayment = balance + interestPayment + currentPMI;
+                    }
+
+                    balance -= principalPayment;
+                    totalInterest += interestPayment;
+
+                    schedule.push({
+                        paymentNumber: paymentNumber,
+                        payment: currentTotalPayment.toFixed(2),
+                        principal: principalPayment.toFixed(2),
+                        interest: interestPayment.toFixed(2),
+                        pmi: currentPMI.toFixed(2),
+                        totalInterest: totalInterest.toFixed(2),
+                        balance: balance < 0.01 ? "0.00" : balance.toFixed(2)
+                    });
+
+                    // Stop if balance is paid off
+                    if (balance <= 0) break;
+                }
+
+                // Calculate time and interest saved
+                let timeSaved = 0;
+                let interestSaved = 0;
+                if (schedule.length < originalTotalPayments) {
+                    timeSaved = (originalTotalPayments - schedule.length) / paymentsPerYear;
+                    interestSaved = originalTotalInterest - totalInterest;
+                }
+
+                // Update summary in the UI
+                document.getElementById('summary-homePrice').innerText = homePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-downPayment').innerText = downPayment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-loanAmount').innerText = loanAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-interestRate').innerText = annualInterestRate.toFixed(2);
+                document.getElementById('summary-loanTerm').innerText = loanTermYears;
+                document.getElementById('summary-interestType').innerText = interestType === 'fixed' ? 'Fixed Rate' : 'Adjustable Rate';
+                document.getElementById('summary-paymentFrequency').innerText = paymentFrequency.charAt(0).toUpperCase() + paymentFrequency.slice(1);
+                document.getElementById('summary-monthlyPayment').innerText = basePayment.toFixed(2);
+
+                if (extraMonthlyPayment > 0) {
+                    document.getElementById('summary-extraPayment').style.display = 'block';
+                    document.getElementById('summary-extraMonthlyPayment').innerText = extraMonthlyPayment.toFixed(2);
+                } else {
+                    document.getElementById('summary-extraPayment').style.display = 'none';
+                }
+
+                if (pmiRate > 0) {
+                    document.getElementById('summary-pmi').style.display = 'block';
+                    document.getElementById('summary-pmiValue').innerText = pmiRate.toFixed(2);
+                } else {
+                    document.getElementById('summary-pmi').style.display = 'none';
+                }
+
+                document.getElementById('summary-totalPayments').innerText = schedule.length;
+                document.getElementById('summary-totalInterest').innerText = totalInterest.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('summary-timeSaved').innerText = timeSaved.toFixed(2);
+                document.getElementById('summary-interestSaved').innerText = interestSaved.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                // Populate amortization schedule (first 12 payments)
+                const amortizationBody = document.getElementById('amortizationBody');
+                amortizationBody.innerHTML = '';
+                for (let i = 0; i < Math.min(12, schedule.length); i++) {
+                    const payment = schedule[i];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payment.paymentNumber}</td>
+                        <td>$${payment.payment}</td>
+                        <td>$${payment.principal}</td>
+                        <td>$${payment.interest}</td>
+                        <td>$${payment.pmi}</td>
+                        <td>$${payment.totalInterest}</td>
+                        <td>$${payment.balance}</td>
+                    `;
+                    amortizationBody.appendChild(row);
+                }
+
+                // Populate full amortization schedule
+                const fullAmortizationBody = document.getElementById('fullAmortizationBody');
+                fullAmortizationBody.innerHTML = '';
+                schedule.forEach(payment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payment.paymentNumber}</td>
+                        <td>$${payment.payment}</td>
+                        <td>$${payment.principal}</td>
+                        <td>$${payment.interest}</td>
+                        <td>$${payment.pmi}</td>
+                        <td>$${payment.totalInterest}</td>
+                        <td>$${payment.balance}</td>
+                    `;
+                    fullAmortizationBody.appendChild(row);
+                });
+
+                // Show results section
+                resultsSection.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
