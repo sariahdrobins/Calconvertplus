@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Date Calculators</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f7f9fa;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #007bff;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      background: #ccc;
+      border: none;
+      outline: none;
+      transition: background 0.3s;
+      font-size: 16px;
+    }
+    .tab.active {
+      background: #007bff;
+      border-bottom: 2px solid #333;
+      font-weight: bold;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    label, input, select, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .inline-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .inline-inputs input {
+      width: 23%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    input, select, button {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #17a2b8;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #117a8b;
+    }
+    /* Specific styles for Duration Calculator */
+    .duration-calculator button {
+      background: #007bff;
+    }
+    .duration-calculator button:hover {
+      background: #0056b3;
+    }
+    a.today-link {
+      font-size: 0.9em;
+      color: #007bff;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+    a.today-link:hover {
+      text-decoration: underline;
+    }
+    .checkbox {
+      margin-bottom: 15px;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Date Calculators</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('addSubtract')">Add/Subtract Dates</button>
+      <button class="tab" onclick="showTab('duration')">Duration Between Dates</button>
+    </div>
+
+    <!-- Add/Subtract Dates Tab Content -->
+    <div id="addSubtract" class="tab-content active">
+      <label for="baseDate">Base Date:</label>
+      <input type="date" id="baseDate" />
+
+      <label for="operation">Operation:</label>
+      <select id="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+      </select>
+
+      <div class="inline-inputs">
+        <input type="number" id="years" placeholder="Years" />
+        <input type="number" id="months" placeholder="Months" />
+        <input type="number" id="weeks" placeholder="Weeks" />
+        <input type="number" id="days" placeholder="Days" />
+      </div>
+
+      <button onclick="calculateNewDate()">Calculate New Date</button>
+      <div class="result" id="newDateResult"></div>
+    </div>
+
+    <!-- Duration Between Dates Tab Content -->
+    <div id="duration" class="tab-content">
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate" />
+      <a href="#" class="today-link" onclick="setToday('startDate'); return false;">Today</a>
+
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate" />
+      <a href="#" class="today-link" onclick="setToday('endDate'); return false;">Today</a>
+
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" id="includeEndDate" /> Include end date in calculation (1 day is added)
+        </label>
+      </div>
+
+      <button onclick="calculateDuration()">Calculate Duration</button>
+      <div class="result" id="durationResult"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tab Switching Function
+    function showTab(tabId) {
+      // Remove active class from all tabs
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Hide all tab contents
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+
+      // Activate the clicked tab and show its content
+      document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Add/Subtract Dates Calculator Function
+    function calculateNewDate() {
+      const baseDateInput = document.getElementById('baseDate').value;
+      const years = parseInt(document.getElementById('years').value) || 0;
+      const months = parseInt(document.getElementById('months').value) || 0;
+      const weeks = parseInt(document.getElementById('weeks').value) || 0;
+      const days = parseInt(document.getElementById('days').value) || 0;
+      const operation = document.getElementById('operation').value;
+
+      if (!baseDateInput) {
+        alert('Please select a base date.');
+        return;
+      }
+
+      let baseDate = new Date(baseDateInput);
+      let multiplier = (operation === 'add') ? 1 : -1;
+
+      // Adjust the date
+      baseDate.setFullYear(baseDate.getFullYear() + multiplier * years);
+      baseDate.setMonth(baseDate.getMonth() + multiplier * months);
+      baseDate.setDate(baseDate.getDate() + multiplier * (weeks * 7 + days));
+
+      // Format the date to a readable string
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const formattedDate = baseDate.toLocaleDateString(undefined, options);
+
+      document.getElementById('newDateResult').textContent = `Resulting Date: ${formattedDate}`;
+    }
+
+    // Duration Between Dates Calculator Functions
+    function setToday(inputId) {
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      document.getElementById(inputId).value = today;
+    }
+
+    function calculateDuration() {
+      const startInput = document.getElementById('startDate').value;
+      const endInput = document.getElementById('endDate').value;
+      const includeEndDate = document.getElementById('includeEndDate').checked;
+
+      if (!startInput || !endInput) {
+        alert('Please select both start and end dates.');
+        return;
+      }
+
+      const start = new Date(startInput);
+      const end = new Date(endInput);
+
+      if (isNaN(start) || isNaN(end)) {
+        alert('Please enter valid dates.');
+        return;
+      }
+
+      if (end < start) {
+        alert('End date must be after the start date.');
+        return;
+      }
+
+      // Calculate difference in milliseconds
+      let diffInMs = end - start;
+      // Convert to days
+      let days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+      if (includeEndDate) {
+        days += 1;
+      }
+
+      document.getElementById('durationResult').textContent = `Duration: ${days} day(s).`;
+    }
+  </script>
+</body>
+</html>
