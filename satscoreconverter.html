@@ -1,0 +1,425 @@
+<!-- Start of SAT ↔ ACT Score Converter -->
+<style>
+  /* SAT ↔ ACT Converter Styling */
+  .converter-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .converter-container h2 {
+    color: #4a90e2;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #fff;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+
+  .convert-button {
+    background-color: #6f42c1;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .convert-button:hover {
+    background-color: #593196;
+  }
+
+  .result {
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+  }
+
+  /* Toggle History Button */
+  .toggle-history-button {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+
+  .toggle-history-button:hover {
+    background-color: #357abd;
+  }
+
+  /* History Table */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .history-table th,
+  .history-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .history-table th {
+    background-color: #4a90e2;
+    color: #fff;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .converter-container {
+      padding: 20px;
+    }
+
+    .history-table th,
+    .history-table td {
+      font-size: 14px;
+      padding: 6px;
+    }
+  }
+</style>
+
+<div class="converter-container">
+  <h2>SAT ↔ ACT Score Converter</h2>
+
+  <!-- Conversion Mode Selection -->
+  <div class="form-group">
+    <label for="conversionMode">Select Conversion Mode:</label>
+    <select id="conversionMode" name="conversionMode" required>
+      <option value="" disabled selected>Select Mode</option>
+      <option value="satToTotal">Convert SAT Components to Total SAT Score</option>
+      <option value="satToACT">Convert Total SAT Score to ACT Score Range</option>
+      <option value="actToSAT">Convert ACT Score to SAT Score Range</option>
+    </select>
+  </div>
+
+  <!-- SAT Components to Total SAT -->
+  <div id="satToTotalSection" style="display: none;">
+    <div class="form-group">
+      <label for="satReadingWriting">Evidence-Based Reading & Writing (R/W) Score:</label>
+      <input type="number" id="satReadingWriting" name="satReadingWriting" placeholder="Enter R/W score" min="200" max="800">
+    </div>
+
+    <div class="form-group">
+      <label for="satMath">Math Score:</label>
+      <input type="number" id="satMath" name="satMath" placeholder="Enter Math score" min="200" max="800">
+    </div>
+
+    <button type="button" class="convert-button" onclick="convertSATToTotal()">Convert to Total SAT Score</button>
+    <div class="result" id="totalSATResult"></div>
+  </div>
+
+  <!-- Total SAT to ACT Range -->
+  <div id="satToACTSection" style="display: none;">
+    <div class="form-group">
+      <label for="totalSAT">Total SAT Score:</label>
+      <input type="number" id="totalSAT" name="totalSAT" placeholder="Enter Total SAT score" min="400" max="1600">
+    </div>
+    <button type="button" class="convert-button" onclick="convertTotalSATToACT()">Convert to ACT Score Range</button>
+    <div class="result" id="actRangeResult"></div>
+  </div>
+
+  <!-- ACT to SAT Range -->
+  <div id="actToSATSection" style="display: none;">
+    <div class="form-group">
+      <label for="actScore">ACT Score:</label>
+      <input type="number" id="actScore" name="actScore" placeholder="Enter ACT score" min="1" max="36">
+    </div>
+    <button type="button" class="convert-button" onclick="convertACTToSAT()">Convert to SAT Score Range</button>
+    <div class="result" id="satRangeResult"></div>
+  </div>
+
+  <!-- Conversion History -->
+  <button type="button" class="toggle-history-button" onclick="toggleHistory()">Show Conversion History</button>
+  <table class="history-table" id="historyTable">
+    <thead>
+      <tr>
+        <th>Mode</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Date & Time</th>
+      </tr>
+    </thead>
+    <tbody id="historyBody">
+      <!-- History entries will appear here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Concordance Tables
+  const satToACT = [
+    { min: 400, max: 410, act: '1' },
+    { min: 420, max: 430, act: '2' },
+    { min: 440, max: 450, act: '3' },
+    { min: 460, max: 470, act: '4' },
+    { min: 480, max: 490, act: '5' },
+    { min: 500, max: 510, act: '6' },
+    { min: 520, max: 530, act: '7' },
+    { min: 540, max: 550, act: '8' },
+    { min: 560, max: 570, act: '9' },
+    { min: 580, max: 590, act: '10' },
+    { min: 600, max: 610, act: '11' },
+    { min: 620, max: 630, act: '12' },
+    { min: 640, max: 650, act: '13' },
+    { min: 660, max: 670, act: '14' },
+    { min: 680, max: 690, act: '15' },
+    { min: 700, max: 710, act: '16' },
+    { min: 720, max: 730, act: '17' },
+    { min: 740, max: 750, act: '18' },
+    { min: 760, max: 770, act: '19' },
+    { min: 780, max: 790, act: '20' },
+    { min: 800, max: 810, act: '21' },
+    { min: 820, max: 830, act: '22' },
+    { min: 840, max: 850, act: '23' },
+    { min: 860, max: 870, act: '24' },
+    { min: 880, max: 890, act: '25' },
+    { min: 900, max: 910, act: '26' },
+    { min: 920, max: 930, act: '27' },
+    { min: 940, max: 950, act: '28' },
+    { min: 960, max: 970, act: '29' },
+    { min: 980, max: 990, act: '30' },
+    { min: 1000, max: 1010, act: '31' },
+    { min: 1020, max: 1030, act: '32' },
+    { min: 1040, max: 1050, act: '33' },
+    { min: 1060, max: 1070, act: '34' },
+    { min: 1080, max: 1090, act: '35' },
+    { min: 1100, max: 1600, act: '36' }
+  ];
+
+  const actToSAT = [
+    { act: 1, satMin: 400, satMax: 410 },
+    { act: 2, satMin: 420, satMax: 430 },
+    { act: 3, satMin: 440, satMax: 450 },
+    { act: 4, satMin: 460, satMax: 470 },
+    { act: 5, satMin: 480, satMax: 490 },
+    { act: 6, satMin: 500, satMax: 510 },
+    { act: 7, satMin: 520, satMax: 530 },
+    { act: 8, satMin: 540, satMax: 550 },
+    { act: 9, satMin: 560, satMax: 570 },
+    { act: 10, satMin: 580, satMax: 590 },
+    { act: 11, satMin: 600, satMax: 610 },
+    { act: 12, satMin: 620, satMax: 630 },
+    { act: 13, satMin: 640, satMax: 650 },
+    { act: 14, satMin: 660, satMax: 670 },
+    { act: 15, satMin: 680, satMax: 690 },
+    { act: 16, satMin: 700, satMax: 710 },
+    { act: 17, satMin: 720, satMax: 730 },
+    { act: 18, satMin: 740, satMax: 750 },
+    { act: 19, satMin: 760, satMax: 770 },
+    { act: 20, satMin: 780, satMax: 790 },
+    { act: 21, satMin: 800, satMax: 810 },
+    { act: 22, satMin: 820, satMax: 830 },
+    { act: 23, satMin: 840, satMax: 850 },
+    { act: 24, satMin: 860, satMax: 870 },
+    { act: 25, satMin: 880, satMax: 890 },
+    { act: 26, satMin: 900, satMax: 910 },
+    { act: 27, satMin: 920, satMax: 930 },
+    { act: 28, satMin: 940, satMax: 950 },
+    { act: 29, satMin: 960, satMax: 970 },
+    { act: 30, satMin: 980, satMax: 990 },
+    { act: 31, satMin: 1000, satMax: 1010 },
+    { act: 32, satMin: 1020, satMax: 1030 },
+    { act: 33, satMin: 1040, satMax: 1050 },
+    { act: 34, satMin: 1060, satMax: 1070 },
+    { act: 35, satMin: 1080, satMax: 1090 },
+    { act: 36, satMin: 1100, satMax: 1600 }
+  ];
+
+  // Handle Conversion Mode Selection
+  const conversionMode = document.getElementById('conversionMode');
+  const satToTotalSection = document.getElementById('satToTotalSection');
+  const satToACTSection = document.getElementById('satToACTSection');
+  const actToSATSection = document.getElementById('actToSATSection');
+
+  conversionMode.addEventListener('change', function() {
+    const mode = this.value;
+    if (mode === 'satToTotal') {
+      satToTotalSection.style.display = 'block';
+      satToACTSection.style.display = 'none';
+      actToSATSection.style.display = 'none';
+      clearResults();
+    } else if (mode === 'satToACT') {
+      satToTotalSection.style.display = 'none';
+      satToACTSection.style.display = 'block';
+      actToSATSection.style.display = 'none';
+      clearResults();
+    } else if (mode === 'actToSAT') {
+      satToTotalSection.style.display = 'none';
+      satToACTSection.style.display = 'none';
+      actToSATSection.style.display = 'block';
+      clearResults();
+    } else {
+      satToTotalSection.style.display = 'none';
+      satToACTSection.style.display = 'none';
+      actToSATSection.style.display = 'none';
+      clearResults();
+    }
+  });
+
+  // Conversion Functions
+
+  // 1. SAT Components to Total SAT Score
+  function convertSATToTotal() {
+    const rw = parseInt(document.getElementById('satReadingWriting').value);
+    const math = parseInt(document.getElementById('satMath').value);
+    const resultDiv = document.getElementById('totalSATResult');
+
+    if (isNaN(rw) || isNaN(math)) {
+      alert('Please enter valid scores for both R/W and Math.');
+      return;
+    }
+
+    // Validate score ranges
+    if (rw < 200 || rw > 800 || math < 200 || math > 800) {
+      alert('Each SAT component score must be between 200 and 800.');
+      return;
+    }
+
+    const totalSAT = rw + math;
+    resultDiv.textContent = `Total SAT Score: ${totalSAT}`;
+
+    // Log Conversion History
+    logHistory('SAT Components to Total SAT', `R/W: ${rw}, Math: ${math}`, `Total SAT: ${totalSAT}`);
+  }
+
+  // 2. Total SAT Score to ACT Score Range
+  function convertTotalSATToACT() {
+    const totalSAT = parseInt(document.getElementById('totalSAT').value);
+    const resultDiv = document.getElementById('actRangeResult');
+
+    if (isNaN(totalSAT)) {
+      alert('Please enter a valid Total SAT score.');
+      return;
+    }
+
+    if (totalSAT < 400 || totalSAT > 1600) {
+      alert('Total SAT score must be between 400 and 1600.');
+      return;
+    }
+
+    // Find equivalent ACT score
+    let equivalentACT = 'Unknown';
+    for (let i = 0; i < satToACT.length; i++) {
+      if (totalSAT >= satToACT[i].min && totalSAT <= satToACT[i].max) {
+        equivalentACT = satToACT[i].act;
+        break;
+      }
+    }
+
+    resultDiv.textContent = `Equivalent ACT Score: ${equivalentACT}`;
+
+    // Log Conversion History
+    logHistory('Total SAT to ACT', `Total SAT: ${totalSAT}`, `ACT: ${equivalentACT}`);
+  }
+
+  // 3. ACT Score to SAT Score Range
+  function convertACTToSAT() {
+    const actScore = parseInt(document.getElementById('actScore').value);
+    const resultDiv = document.getElementById('satRangeResult');
+
+    if (isNaN(actScore)) {
+      alert('Please enter a valid ACT score.');
+      return;
+    }
+
+    if (actScore < 1 || actScore > 36) {
+      alert('ACT score must be between 1 and 36.');
+      return;
+    }
+
+    // Find equivalent SAT score range
+    let equivalentSATMin = 'Unknown';
+    let equivalentSATMax = 'Unknown';
+    for (let i = 0; i < actToSAT.length; i++) {
+      if (actScore === actToSAT[i].act) {
+        equivalentSATMin = actToSAT[i].satMin;
+        equivalentSATMax = actToSAT[i].satMax;
+        break;
+      }
+    }
+
+    resultDiv.textContent = `Equivalent SAT Score Range: ${equivalentSATMin} - ${equivalentSATMax}`;
+
+    // Log Conversion History
+    logHistory('ACT to SAT', `ACT: ${actScore}`, `SAT Range: ${equivalentSATMin} - ${equivalentSATMax}`);
+  }
+
+  // Conversion History Logging
+  function logHistory(mode, input, output) {
+    const historyBody = document.getElementById('historyBody');
+    const row = document.createElement('tr');
+    const now = new Date();
+    row.innerHTML = `
+      <td>${mode}</td>
+      <td>${input}</td>
+      <td>${output}</td>
+      <td>${now.toLocaleString()}</td>
+    `;
+    historyBody.prepend(row); // Add the latest entry at the top
+  }
+
+  // Toggle Conversion History Visibility
+  function toggleHistory() {
+    const historyTable = document.getElementById('historyTable');
+    const toggleButton = document.querySelector('.toggle-history-button');
+
+    if (historyTable.style.display === 'none' || historyTable.style.display === '') {
+      historyTable.style.display = 'table';
+      toggleButton.textContent = 'Hide Conversion History';
+    } else {
+      historyTable.style.display = 'none';
+      toggleButton.textContent = 'Show Conversion History';
+    }
+  }
+
+  // Clear Results Function
+  function clearResults() {
+    document.getElementById('totalSATResult').textContent = '';
+    document.getElementById('actRangeResult').textContent = '';
+    document.getElementById('satRangeResult').textContent = '';
+  }
+</script>
+<!-- End of SAT ↔ ACT Score Converter -->
