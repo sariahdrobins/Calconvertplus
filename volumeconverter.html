@@ -20,7 +20,7 @@
     }
     .converter h2 {
       text-align: center;
-      color: #17a2b8;
+      color: #007bff;
       margin-bottom: 20px;
     }
     .form-group {
@@ -40,11 +40,11 @@
       background-color: #fff;
     }
     input:focus, select:focus {
-      border-color: #17a2b8;
+      border-color: #007bff;
       outline: none;
     }
     button {
-      background: #17a2b8;
+      background: #007bff;
       color: white;
       border: none;
       padding: 12px;
@@ -53,6 +53,7 @@
       font-size: 16px;
       width: 100%;
       transition: background 0.3s;
+      margin-top: 10px;
     }
     button:hover {
       background: #117a8b;
@@ -64,6 +65,44 @@
       font-size: 18px;
       color: #333;
     }
+    /* Conversion History */
+    .history {
+      margin-top: 30px;
+    }
+    .history h3 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      display: none;
+    }
+    .history-table th, .history-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    .history-table th {
+      background-color: #007bff;
+      color: white;
+    }
+    .toggle-history {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      transition: background 0.3s;
+      margin-top: 15px;
+    }
+    .toggle-history:hover {
+      background: #007bff;
+    }
     /* Responsive Design */
     @media (max-width: 600px) {
       .converter {
@@ -72,12 +111,16 @@
       .result {
         font-size: 16px;
       }
+      .history-table th, .history-table td {
+        font-size: 14px;
+        padding: 6px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="converter">
-    <h2>Enhanced Volume Converter</h2>
+    <h2>Volume Converter</h2>
     
     <div class="form-group">
       <label for="volValue">Value:</label>
@@ -94,11 +137,11 @@
         <option value="m3">Cubic Meter (m³)</option>
         <option value="tsp">Teaspoon (tsp)</option>
         <option value="tbsp">Tablespoon (tbsp)</option>
-        <option value="fl_oz">Fluid Ounce (fl oz US)</option>
-        <option value="cup">Cup (c US)</option>
-        <option value="pt">Pint (pt US)</option>
-        <option value="qt">Quart (qt US)</option>
-        <option value="gal">Gallon (gal US)</option>
+        <option value="fl_oz_us">Fluid Ounce (fl oz US)</option>
+        <option value="cup_us">Cup (c US)</option>
+        <option value="pt_us">Pint (pt US)</option>
+        <option value="qt_us">Quart (qt US)</option>
+        <option value="gal_us">Gallon (gal US)</option>
         <option value="fl_oz_uk">Fluid Ounce (fl oz UK)</option>
         <option value="pt_uk">Pint (pt UK)</option>
         <option value="qt_uk">Quart (qt UK)</option>
@@ -119,11 +162,11 @@
         <option value="m3">Cubic Meter (m³)</option>
         <option value="tsp">Teaspoon (tsp)</option>
         <option value="tbsp">Tablespoon (tbsp)</option>
-        <option value="fl_oz">Fluid Ounce (fl oz US)</option>
-        <option value="cup">Cup (c US)</option>
-        <option value="pt">Pint (pt US)</option>
-        <option value="qt">Quart (qt US)</option>
-        <option value="gal">Gallon (gal US)</option>
+        <option value="fl_oz_us">Fluid Ounce (fl oz US)</option>
+        <option value="cup_us">Cup (c US)</option>
+        <option value="pt_us">Pint (pt US)</option>
+        <option value="qt_us">Quart (qt US)</option>
+        <option value="gal_us">Gallon (gal US)</option>
         <option value="fl_oz_uk">Fluid Ounce (fl oz UK)</option>
         <option value="pt_uk">Pint (pt UK)</option>
         <option value="qt_uk">Quart (qt UK)</option>
@@ -136,6 +179,25 @@
     
     <button onclick="convertVolume()">Convert</button>
     <div class="result" id="volResult"></div>
+    
+    <!-- Conversion History -->
+    <div class="history">
+      <h3>Conversion History</h3>
+      <button class="toggle-history" onclick="toggleHistory()">Show History</button>
+      <table class="history-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- History entries will appear here -->
+        </tbody>
+      </table>
+    </div>
   </div>
   
   <script>
@@ -152,25 +214,48 @@
       
       // Conversion factors to liters
       const factorsToLiters = {
-        ml: 0.001,
-        cl: 0.01,
-        l: 1,
-        cm3: 0.001,
-        m3: 1000,
-        tsp: 0.00492892,
-        tbsp: 0.0147868,
-        fl_oz: 0.0295735,
-        cup: 0.24,
-        pt: 0.473176,
-        qt: 0.946353,
-        gal: 3.78541,
-        fl_oz_uk: 0.0284131,
-        pt_uk: 0.568261,
-        qt_uk: 1.13652,
-        gal_uk: 4.54609,
-        in3: 0.0163871,
-        ft3: 28.3168,
-        yd3: 764.555
+        ml: 0.001,          // Milliliter
+        cl: 0.01,           // Centiliter
+        l: 1,               // Liter
+        cm3: 0.001,         // Cubic Centimeter
+        m3: 1000,           // Cubic Meter
+        tsp: 0.00492892,    // Teaspoon (tsp US)
+        tbsp: 0.0147868,    // Tablespoon (tbsp US)
+        fl_oz_us: 0.0295735,// Fluid Ounce (fl oz US)
+        cup_us: 0.24,       // Cup (c US)
+        pt_us: 0.473176,    // Pint (pt US)
+        qt_us: 0.946353,    // Quart (qt US)
+        gal_us: 3.78541,    // Gallon (gal US)
+        fl_oz_uk: 0.0284131,// Fluid Ounce (fl oz UK)
+        pt_uk: 0.568261,    // Pint (pt UK)
+        qt_uk: 1.13652,     // Quart (qt UK)
+        gal_uk: 4.54609,    // Gallon (gal UK)
+        in3: 0.0163871,     // Cubic Inch (in³)
+        ft3: 28.3168,       // Cubic Foot (ft³)
+        yd3: 764.555        // Cubic Yard (yd³)
+      };
+      
+      // Unit Labels for Display
+      const unitLabels = {
+        ml: 'Milliliter (ml)',
+        cl: 'Centiliter (cl)',
+        l: 'Liter (L)',
+        cm3: 'Cubic Centimeter (cm³)',
+        m3: 'Cubic Meter (m³)',
+        tsp: 'Teaspoon (tsp US)',
+        tbsp: 'Tablespoon (tbsp US)',
+        fl_oz_us: 'Fluid Ounce (fl oz US)',
+        cup_us: 'Cup (c US)',
+        pt_us: 'Pint (pt US)',
+        qt_us: 'Quart (qt US)',
+        gal_us: 'Gallon (gal US)',
+        fl_oz_uk: 'Fluid Ounce (fl oz UK)',
+        pt_uk: 'Pint (pt UK)',
+        qt_uk: 'Quart (qt UK)',
+        gal_uk: 'Gallon (gal UK)',
+        in3: 'Cubic Inch (in³)',
+        ft3: 'Cubic Foot (ft³)',
+        yd3: 'Cubic Yard (yd³)'
       };
       
       // Check if 'from' and 'to' units are valid
@@ -185,31 +270,39 @@
       // Convert from liters to the target unit
       const convertedValue = valueInLiters / factorsToLiters[to];
       
-      // Get unit labels for display
-      const unitLabels = {
-        ml: 'Milliliter (ml)',
-        cl: 'Centiliter (cl)',
-        l: 'Liter (L)',
-        cm3: 'Cubic Centimeter (cm³)',
-        m3: 'Cubic Meter (m³)',
-        tsp: 'Teaspoon (tsp)',
-        tbsp: 'Tablespoon (tbsp)',
-        fl_oz: 'Fluid Ounce (fl oz US)',
-        cup: 'Cup (c US)',
-        pt: 'Pint (pt US)',
-        qt: 'Quart (qt US)',
-        gal: 'Gallon (gal US)',
-        fl_oz_uk: 'Fluid Ounce (fl oz UK)',
-        pt_uk: 'Pint (pt UK)',
-        qt_uk: 'Quart (qt UK)',
-        gal_uk: 'Gallon (gal UK)',
-        in3: 'Cubic Inch (in³)',
-        ft3: 'Cubic Foot (ft³)',
-        yd3: 'Cubic Yard (yd³)'
-      };
-      
       // Display the result with appropriate formatting
       resultDiv.textContent = `${value} ${unitLabels[from]} = ${convertedValue.toFixed(4)} ${unitLabels[to]}`;
+      
+      // Log Conversion History
+      logHistory(`${unitLabels[from]} to ${unitLabels[to]}`, `${value} ${unitLabels[from]}`, `${convertedValue.toFixed(4)} ${unitLabels[to]}`);
+    }
+    
+    // Conversion History Logging
+    function logHistory(mode, input, output) {
+      const historyBody = document.getElementById('historyBody');
+      const row = document.createElement('tr');
+      const now = new Date();
+      row.innerHTML = `
+        <td>${mode}</td>
+        <td>${input}</td>
+        <td>${output}</td>
+        <td>${now.toLocaleString()}</td>
+      `;
+      historyBody.prepend(row); // Add the latest entry at the top
+    }
+    
+    // Toggle Conversion History Visibility
+    function toggleHistory() {
+      const historyTable = document.getElementById('historyTable');
+      const toggleButton = document.querySelector('.toggle-history');
+      
+      if (historyTable.style.display === 'none' || historyTable.style.display === '') {
+        historyTable.style.display = 'table';
+        toggleButton.textContent = 'Hide History';
+      } else {
+        historyTable.style.display = 'none';
+        toggleButton.textContent = 'Show History';
+      }
     }
   </script>
 </body>
