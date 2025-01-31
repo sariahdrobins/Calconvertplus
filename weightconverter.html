@@ -1,0 +1,280 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enhanced Weight Converter</title>
+  <style>
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      padding: 20px; 
+      background: #f5f5f5; 
+      color: #333; 
+    }
+    .converter { 
+      max-width: 500px; 
+      margin: auto; 
+      background: #fff; 
+      padding: 25px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    }
+    .converter h2 { 
+      text-align: center; 
+      color: #007bff; 
+      margin-bottom: 20px; 
+    }
+    .form-group { 
+      margin-bottom: 15px; 
+    }
+    label { 
+      display: block; 
+      margin-bottom: 5px; 
+      font-weight: 600; 
+    }
+    input, select { 
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; 
+      font-size: 16px; 
+      background-color: #fff; 
+    }
+    input:focus, select:focus { 
+      border-color: #28a745; 
+      outline: none; 
+    }
+    button { 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      padding: 12px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 16px; 
+      width: 100%; 
+      transition: background 0.3s; 
+      margin-top: 10px; 
+    }
+    button:hover { 
+      background: #218838; 
+    }
+    .result { 
+      font-weight: bold; 
+      margin-top: 20px; 
+      text-align: center; 
+      font-size: 18px; 
+      color: #333; 
+    }
+    /* Conversion History */
+    .history {
+      margin-top: 30px;
+    }
+    .history h3 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      display: none;
+    }
+    .history-table th, .history-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    .history-table th {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .toggle-history {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      transition: background 0.3s;
+      margin-top: 15px;
+    }
+    .toggle-history:hover {
+      background: #117a8b;
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .converter { 
+        padding: 20px; 
+      }
+      .result { 
+        font-size: 16px; 
+      }
+      .history-table th, .history-table td {
+        font-size: 14px;
+        padding: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h2>Weight Converter</h2>
+    
+    <div class="form-group">
+      <label for="weightValue">Value:</label>
+      <input type="number" id="weightValue" placeholder="Enter value" min="0" step="any" />
+    </div>
+    
+    <div class="form-group">
+      <label for="fromWeight">From:</label>
+      <select id="fromWeight">
+        <option value="mg">Milligram (mg)</option>
+        <option value="g">Gram (g)</option>
+        <option value="kg">Kilogram (kg)</option>
+        <option value="tonne">Metric Ton (tonne)</option>
+        <option value="oz_us">Ounce (oz US)</option>
+        <option value="lb_us">Pound (lb US)</option>
+        <option value="ton_us">Short Ton (ton US)</option>
+        <option value="oz_im">Ounce (oz Imperial)</option>
+        <option value="lb_im">Pound (lb Imperial)</option>
+        <option value="st">Stone (st)</option>
+        <option value="ton_im">Long Ton (ton Imperial)</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="toWeight">To:</label>
+      <select id="toWeight">
+        <option value="mg">Milligram (mg)</option>
+        <option value="g">Gram (g)</option>
+        <option value="kg">Kilogram (kg)</option>
+        <option value="tonne">Metric Ton (tonne)</option>
+        <option value="oz_us">Ounce (oz US)</option>
+        <option value="lb_us">Pound (lb US)</option>
+        <option value="ton_us">Short Ton (ton US)</option>
+        <option value="oz_im">Ounce (oz Imperial)</option>
+        <option value="lb_im">Pound (lb Imperial)</option>
+        <option value="st">Stone (st)</option>
+        <option value="ton_im">Long Ton (ton Imperial)</option>
+      </select>
+    </div>
+    
+    <button onclick="convertWeight()">Convert</button>
+    <div class="result" id="weightResult"></div>
+    
+    <!-- Conversion History -->
+    <div class="history">
+      <h3>Conversion History</h3>
+      <button class="toggle-history" onclick="toggleHistory()">Show History</button>
+      <table class="history-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- History entries will appear here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    function convertWeight() {
+      const value = parseFloat(document.getElementById('weightValue').value);
+      const from = document.getElementById('fromWeight').value;
+      const to = document.getElementById('toWeight').value;
+      const resultDiv = document.getElementById('weightResult');
+      
+      if (isNaN(value)) { 
+        alert('Please enter a valid number'); 
+        return; 
+      }
+      
+      // Conversion factors to kilograms
+      const factorsToKg = {
+        mg: 0.000001, // Milligram
+        g: 0.001,      // Gram
+        kg: 1,         // Kilogram
+        tonne: 1000,   // Metric Ton
+        oz_us: 0.0283495, // Ounce (US)
+        lb_us: 0.453592,  // Pound (US)
+        ton_us: 907.185,   // Short Ton (US)
+        oz_im: 0.0283495,  // Ounce (Imperial) - same as US ounce
+        lb_im: 0.453592,   // Pound (Imperial) - same as US pound
+        st: 6.35029,       // Stone
+        ton_im: 1016.05     // Long Ton (Imperial)
+      };
+      
+      // Unit Labels for Display
+      const unitLabels = {
+        mg: 'Milligram (mg)',
+        g: 'Gram (g)',
+        kg: 'Kilogram (kg)',
+        tonne: 'Metric Ton (tonne)',
+        oz_us: 'Ounce (oz US)',
+        lb_us: 'Pound (lb US)',
+        ton_us: 'Short Ton (ton US)',
+        oz_im: 'Ounce (oz Imperial)',
+        lb_im: 'Pound (lb Imperial)',
+        st: 'Stone (st)',
+        ton_im: 'Long Ton (ton Imperial)'
+      };
+      
+      // Check if 'from' and 'to' units are valid
+      if (!factorsToKg[from] || !factorsToKg[to]) {
+        alert('Invalid unit selected.');
+        return;
+      }
+      
+      // Convert from the original unit to kilograms
+      const valueInKg = value * factorsToKg[from];
+      
+      // Convert from kilograms to the target unit
+      const convertedValue = valueInKg / factorsToKg[to];
+      
+      // Display the result with appropriate formatting
+      resultDiv.textContent = `${value} ${unitLabels[from]} = ${convertedValue.toFixed(4)} ${unitLabels[to]}`;
+      
+      // Log Conversion History
+      logHistory(`${unitLabels[from]} to ${unitLabels[to]}`, `${value} ${unitLabels[from]}`, `${convertedValue.toFixed(4)} ${unitLabels[to]}`);
+    }
+    
+    // Conversion History Logging
+    function logHistory(mode, input, output) {
+      const historyBody = document.getElementById('historyBody');
+      const row = document.createElement('tr');
+      const now = new Date();
+      row.innerHTML = `
+        <td>${mode}</td>
+        <td>${input}</td>
+        <td>${output}</td>
+        <td>${now.toLocaleString()}</td>
+      `;
+      historyBody.prepend(row); // Add the latest entry at the top
+    }
+    
+    // Toggle Conversion History Visibility
+    function toggleHistory() {
+      const historyTable = document.getElementById('historyTable');
+      const toggleButton = document.querySelector('.toggle-history');
+      
+      if (historyTable.style.display === 'none' || historyTable.style.display === '') {
+        historyTable.style.display = 'table';
+        toggleButton.textContent = 'Hide History';
+      } else {
+        historyTable.style.display = 'none';
+        toggleButton.textContent = 'Show History';
+      }
+    }
+  </script>
+</body>
+</html>
+
+</body>
+</html>
