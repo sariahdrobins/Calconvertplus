@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enhanced Volume Converter</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    .converter {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .converter h2 {
+      text-align: center;
+      color: #17a2b8;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #17a2b8;
+      outline: none;
+    }
+    button {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #117a8b;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .converter {
+        padding: 20px;
+      }
+      .result {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h2>Enhanced Volume Converter</h2>
+    
+    <div class="form-group">
+      <label for="volValue">Value:</label>
+      <input type="number" id="volValue" placeholder="Enter value" min="0" step="any" />
+    </div>
+    
+    <div class="form-group">
+      <label for="fromVol">From:</label>
+      <select id="fromVol">
+        <option value="ml">Milliliter (ml)</option>
+        <option value="cl">Centiliter (cl)</option>
+        <option value="l">Liter (L)</option>
+        <option value="cm3">Cubic Centimeter (cm³)</option>
+        <option value="m3">Cubic Meter (m³)</option>
+        <option value="tsp">Teaspoon (tsp)</option>
+        <option value="tbsp">Tablespoon (tbsp)</option>
+        <option value="fl_oz">Fluid Ounce (fl oz US)</option>
+        <option value="cup">Cup (c US)</option>
+        <option value="pt">Pint (pt US)</option>
+        <option value="qt">Quart (qt US)</option>
+        <option value="gal">Gallon (gal US)</option>
+        <option value="fl_oz_uk">Fluid Ounce (fl oz UK)</option>
+        <option value="pt_uk">Pint (pt UK)</option>
+        <option value="qt_uk">Quart (qt UK)</option>
+        <option value="gal_uk">Gallon (gal UK)</option>
+        <option value="in3">Cubic Inch (in³)</option>
+        <option value="ft3">Cubic Foot (ft³)</option>
+        <option value="yd3">Cubic Yard (yd³)</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="toVol">To:</label>
+      <select id="toVol">
+        <option value="ml">Milliliter (ml)</option>
+        <option value="cl">Centiliter (cl)</option>
+        <option value="l">Liter (L)</option>
+        <option value="cm3">Cubic Centimeter (cm³)</option>
+        <option value="m3">Cubic Meter (m³)</option>
+        <option value="tsp">Teaspoon (tsp)</option>
+        <option value="tbsp">Tablespoon (tbsp)</option>
+        <option value="fl_oz">Fluid Ounce (fl oz US)</option>
+        <option value="cup">Cup (c US)</option>
+        <option value="pt">Pint (pt US)</option>
+        <option value="qt">Quart (qt US)</option>
+        <option value="gal">Gallon (gal US)</option>
+        <option value="fl_oz_uk">Fluid Ounce (fl oz UK)</option>
+        <option value="pt_uk">Pint (pt UK)</option>
+        <option value="qt_uk">Quart (qt UK)</option>
+        <option value="gal_uk">Gallon (gal UK)</option>
+        <option value="in3">Cubic Inch (in³)</option>
+        <option value="ft3">Cubic Foot (ft³)</option>
+        <option value="yd3">Cubic Yard (yd³)</option>
+      </select>
+    </div>
+    
+    <button onclick="convertVolume()">Convert</button>
+    <div class="result" id="volResult"></div>
+  </div>
+  
+  <script>
+    function convertVolume() {
+      const value = parseFloat(document.getElementById('volValue').value);
+      const from = document.getElementById('fromVol').value;
+      const to = document.getElementById('toVol').value;
+      const resultDiv = document.getElementById('volResult');
+      
+      if (isNaN(value)) { 
+        alert('Please enter a valid number'); 
+        return; 
+      }
+      
+      // Conversion factors to liters
+      const factorsToLiters = {
+        ml: 0.001,
+        cl: 0.01,
+        l: 1,
+        cm3: 0.001,
+        m3: 1000,
+        tsp: 0.00492892,
+        tbsp: 0.0147868,
+        fl_oz: 0.0295735,
+        cup: 0.24,
+        pt: 0.473176,
+        qt: 0.946353,
+        gal: 3.78541,
+        fl_oz_uk: 0.0284131,
+        pt_uk: 0.568261,
+        qt_uk: 1.13652,
+        gal_uk: 4.54609,
+        in3: 0.0163871,
+        ft3: 28.3168,
+        yd3: 764.555
+      };
+      
+      // Check if 'from' and 'to' units are valid
+      if (!factorsToLiters[from] || !factorsToLiters[to]) {
+        alert('Invalid unit selected.');
+        return;
+      }
+      
+      // Convert from the original unit to liters
+      const valueInLiters = value * factorsToLiters[from];
+      
+      // Convert from liters to the target unit
+      const convertedValue = valueInLiters / factorsToLiters[to];
+      
+      // Get unit labels for display
+      const unitLabels = {
+        ml: 'Milliliter (ml)',
+        cl: 'Centiliter (cl)',
+        l: 'Liter (L)',
+        cm3: 'Cubic Centimeter (cm³)',
+        m3: 'Cubic Meter (m³)',
+        tsp: 'Teaspoon (tsp)',
+        tbsp: 'Tablespoon (tbsp)',
+        fl_oz: 'Fluid Ounce (fl oz US)',
+        cup: 'Cup (c US)',
+        pt: 'Pint (pt US)',
+        qt: 'Quart (qt US)',
+        gal: 'Gallon (gal US)',
+        fl_oz_uk: 'Fluid Ounce (fl oz UK)',
+        pt_uk: 'Pint (pt UK)',
+        qt_uk: 'Quart (qt UK)',
+        gal_uk: 'Gallon (gal UK)',
+        in3: 'Cubic Inch (in³)',
+        ft3: 'Cubic Foot (ft³)',
+        yd3: 'Cubic Yard (yd³)'
+      };
+      
+      // Display the result with appropriate formatting
+      resultDiv.textContent = `${value} ${unitLabels[from]} = ${convertedValue.toFixed(4)} ${unitLabels[to]}`;
+    }
+  </script>
+</body>
+</html>
